@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using BusinessLogic.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Server.Models;
 
 namespace Server.Controllers
 {
@@ -28,27 +29,30 @@ namespace Server.Controllers
 
 		// GET api/v1/shows/5
 		[HttpGet("{id}")]
-		public ActionResult<string> Get(int id)
+		public async Task<JsonResult> Get(int id)
 		{
-			return "value";
-		}
+			var show = await _showService.GetShowAsync(id);
 
-		// POST api/v1/shows
-		[HttpPost]
-		public void Post([FromBody] string value)
-		{
+			return new JsonResult(show);
 		}
 
 		// PUT api/v1/shows/5
 		[HttpPut("{id}")]
-		public void Put(int id, [FromBody] string value)
+		public async Task<JsonResult> Put(int id, [FromBody] ApiShow show)
 		{
+			show.Id = id;
+			var result = await _showService.AddShowAsync(show);
+
+			return new JsonResult(result);
 		}
 
 		// DELETE api/v1/shows/5
 		[HttpDelete("{id}")]
-		public void Delete(int id)
+		public async Task<JsonResult> Delete(int id)
 		{
+			var result = await _showService.DeleteShowAsync(id);
+
+			return new JsonResult(result);
 		}
 	}
 }

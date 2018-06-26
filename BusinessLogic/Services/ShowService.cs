@@ -31,6 +31,7 @@ namespace BusinessLogic.Services
 				var shows = await _database
 					.Shows
 					.Include(show => show.Casts)
+					.AsNoTracking()
 					.OrderBy(show => show.Name)
 					.Skip(skip)
 					.Take(take)
@@ -42,6 +43,40 @@ namespace BusinessLogic.Services
 			{
 				throw new ServiceException("An error occurred while executing the database query.", exception);
 			}
+		}
+
+		public async Task<ApiShow> GetShowAsync(int id)
+		{
+			var show = await _database
+				.Shows
+				.AsNoTracking()
+				.SingleOrDefaultAsync(item => item.Id == id);
+
+			return _mapper.Map<Show, ApiShow>(show);
+		}
+
+		public async Task<bool> AddShowAsync(ApiShow apiSHow)
+		{
+			var show = _mapper.Map<ApiShow, Show>(apiSHow);
+
+			show.Id = 0;
+			_database.Shows.Add(show);
+			await _database.SaveChangesAsync();
+
+			return true;
+		}
+
+		public async Task<bool> DeleteShowAsync(int id)
+		{
+			var show = await _database
+				.Shows
+				.AsNoTracking()
+				.SingleOrDefaultAsync(item => item.Id == id);
+
+			_database.Shows.Remove(show);
+			await _database.SaveChangesAsync();
+
+			return true;
 		}
 	}
 }

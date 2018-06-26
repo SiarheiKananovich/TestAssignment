@@ -5,7 +5,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Server.Middleware;
 using BusinessLogic;
-using Database;
 
 namespace Server
 {
@@ -20,7 +19,6 @@ namespace Server
 
 		public void ConfigureServices(IServiceCollection services)
 		{
-			DatabaseConfigurator.ConfigureServices(Configuration, services);
 			BusinessLogicConfigurator.ConfigureServices(Configuration, services);
 
 			services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);

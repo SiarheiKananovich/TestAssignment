@@ -1,12 +1,10 @@
-﻿using BusinessLogic.Interfaces;
-using BusinessLogic.Services;
-using Database;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 
-namespace BusinessLogic
+namespace DataAccess
 {
-	public static class BusinessLogicConfigurator
+    public static class DataAccessConfigurator
 	{
 		public static void ConfigureServices(IConfiguration configuration, IServiceCollection services)
 		{
