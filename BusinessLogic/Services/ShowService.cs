@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
 using BusinessLogic.Exceptions;
@@ -11,15 +11,18 @@ using Server.Models;
 
 namespace BusinessLogic.Services
 {
-	public class ShowService
+	public class ShowsService : IShowsService
 	{
 		private readonly DatabaseContext _database;
 		private readonly IMapper _mapper;
 
-		public ShowService(DatabaseContext database, IMapper mapper)
+
+		public ShowsService(DatabaseContext database, IMapper mapper)
 		{
 			_database = database;
+			_mapper = mapper;
 		}
+
 
 		public async Task<IEnumerable<ApiShow>> GetShowsAsync(int skip, int take)
 		{
@@ -27,6 +30,7 @@ namespace BusinessLogic.Services
 			{
 				var shows = await _database
 					.Shows
+					.Include(show => show.Casts)
 					.OrderBy(show => show.Name)
 					.Skip(skip)
 					.Take(take)
@@ -34,7 +38,7 @@ namespace BusinessLogic.Services
 
 				return _mapper.MapCollection<Show, ApiShow>(shows);
 			}
-			catch (Exception exception)
+			catch (DbException exception)
 			{
 				throw new ServiceException("An error occurred while executing the database query.", exception);
 			}

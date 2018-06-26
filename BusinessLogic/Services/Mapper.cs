@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using BusinessLogic.DataModels;
 using BusinessLogic.Interfaces;
 using Database.Models;
 using Server.Models;
@@ -17,17 +18,23 @@ namespace BusinessLogic.Services
 			_fromTypeToTypeMappings = new Dictionary<Type, Dictionary<Type, Func<object, object>>>();
 
 			RegisterMapping<Show, ApiShow>(Map);
+			RegisterMapping<Cast, ApiCast>(Map);
+			RegisterMapping<TvMazeShowData, ApiShow>(Map);
+			RegisterMapping<TvMazeShowData, Show>(MapTvMazeShowDataToShow);
+			RegisterMapping<TvMazerPerson, Cast>(Map);
 		}
 
 
-		public TTarget Map<TTarget>(object source) where TTarget : class
+		public TTarget Map<TSource, TTarget>(TSource source) 
+			where TTarget : class
+			where TSource : class 
 		{
 			if (source == null)
 			{
 				return null;
 			}
 
-			var typeFrom = source.GetType();
+			var typeFrom = typeof(TSource);
 			var typeTo = typeof(TTarget);
 
 			EnsureMappingExists(typeFrom, typeTo);
@@ -53,8 +60,7 @@ namespace BusinessLogic.Services
 		}
 
 
-
-		private void RegisterMapping<TFrom, TTo>(Func<TFrom, object> mapper) where TFrom : class
+		private void RegisterMapping<TFrom, TTo>(Func<TFrom, TTo> mapper) where TFrom : class
 		{
 			var fromType = typeof(TFrom);
 			var toType = typeof(TTo);
@@ -102,6 +108,41 @@ namespace BusinessLogic.Services
 					Id = data.Id,
 					Name = data.Name,
 					Birthday = data.Birthday
+				};
+		}
+
+		private ApiShow Map(TvMazeShowData data)
+		{
+			return data == null
+				? null
+				: new ApiShow
+				{
+					Id = data.Id,
+					Name = data.Name
+				};
+		}
+
+		private Cast Map(TvMazerPerson data)
+		{
+			return data == null
+				? null
+				: new Cast
+				{
+					Id = data.Id,
+					Name = data.Name,
+					Birthday = data.Birthday == null ? (DateTime?) null : DateTime.Parse(data.Birthday)
+				};
+		}
+
+		private Show MapTvMazeShowDataToShow(TvMazeShowData data)
+		{
+			return data == null
+				? null
+				: new Show
+				{
+					Id = data.Id,
+					Name = data.Name,
+					Casts = MapCollection<TvMazerPerson, Cast>(data.Casts).ToList()
 				};
 		}
 	}

@@ -1,9 +1,9 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
-namespace Server.Models
+namespace BusinessLogic.DataModels
 {
-	public class ApiCast
+	[JsonObject(MemberSerialization.OptIn)]
+	public class TvMazerPerson
 	{
 		[JsonProperty(PropertyName = "id")]
 		public int Id { get; set; }
@@ -12,6 +12,6 @@ namespace Server.Models
 		public string Name { get; set; }
 
 		[JsonProperty(PropertyName = "birthday")]
-		public DateTime? Birthday { get; set; }
+		public string Birthday { get; set; }
 	}
 }
