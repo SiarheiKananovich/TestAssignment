@@ -12,13 +12,16 @@ namespace Server.Controllers
 		[HttpGet]
 		public JsonResult Get()
 		{
-			var a = new Show
+			var x = 1;
+			var b = x / (x - x);
+
+			var a = new ApiShow
 			{
 				Id = 1,
 				Casts = new []
 				{
-					new Cast {Id = 1, Name = "Mike", Birthday = DateTime.Today},
-					new Cast {Id = 2, Name = "Simona", Birthday = DateTime.MinValue}
+					new ApiCast {Id = 1, Name = "Mike", Birthday = DateTime.Today},
+					new ApiCast {Id = 2, Name = "Simona", Birthday = DateTime.MinValue}
 				}
 			};
 
