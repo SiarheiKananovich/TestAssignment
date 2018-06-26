@@ -41,15 +41,18 @@ namespace BusinessLogic.Services
 			return _mapper.Map<Show, ApiShow>(show);
 		}
 
-		public async Task<bool> AddShowAsync(ApiShow apiShow)
+		public async Task AddShowAsync(ApiShow apiShow)
 		{
 			var show = _mapper.Map<ApiShow, Show>(apiShow);
 
-			if ()
+			if (!IsShowValidForAdding(show, out var errorMessage))
+			{
+				return;
+			}
 
 			try
 			{
-				return await _database.ShowRepository.AddShowAsync(show);
+				await _database.ShowRepository.AddShowAsync(show);
 			}
 			catch (DatabaseException exception)
 			{
@@ -69,9 +72,16 @@ namespace BusinessLogic.Services
 			}
 		}
 
-		private bool IsShowValidForAdding()
+		private bool IsShowValidForAdding(Show show, out string errorMessage)
 		{
-			
+			errorMessage = null;
+
+			if (String.IsNullOrEmpty(show.Name))
+			{
+				return false;
+			}
+
+			return true;
 		}
 	}
 }

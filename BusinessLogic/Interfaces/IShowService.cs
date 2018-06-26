@@ -8,7 +8,7 @@ namespace BusinessLogic.Interfaces
 	{
 		Task<IEnumerable<ApiShow>> GetShowsAsync(int skip, int take);
 		Task<ApiShow> GetShowAsync(int id);
-		Task<bool> AddShowAsync(ApiShow apiShow);
+		Task AddShowAsync(ApiShow apiShow);
 		Task<bool> DeleteShowAsync(int id);
 	}
 }
