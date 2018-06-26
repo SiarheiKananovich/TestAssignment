@@ -5,9 +5,8 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using BusinessLogic.DataModels;
 using BusinessLogic.Interfaces;
-using Database;
+using Database.Interfaces;
 using Database.Models;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -17,13 +16,13 @@ namespace BusinessLogic.Services
 {
 	public class TvMazeShowsService : ITvMazeShowsService
 	{
-		private readonly DatabaseContext _database;
+		private readonly IDatabase _database;
 		private readonly IConfiguration _configuration;
 		private readonly ILogger<TvMazeShowsService> _logger;
 		private readonly IMapper _mapper;
 
 
-		public TvMazeShowsService(DatabaseContext database, IConfiguration configuration, ILoggerFactory loggerFactory, IMapper mapper)
+		public TvMazeShowsService(IDatabase database, IConfiguration configuration, ILoggerFactory loggerFactory, IMapper mapper)
 		{
 			_database = database;
 			_configuration = configuration;
@@ -130,24 +129,7 @@ namespace BusinessLogic.Services
 
 		private async Task<bool> TryAddNewShowAsync(Show show)
 		{
-			show.Id = 0;
-			foreach (var cast in show.Casts)
-			{
-				cast.Id = 0;
-			}
-
-			try
-			{
-				_database.Shows.Add(show);
-				await _database.SaveChangesAsync();
-			}
-			catch (DbUpdateException exception)
-			{
-				_logger.LogError(exception, "TvMazeApi not available. Error message: {0}", exception.Message);
-				return false;
-			}
-
-			return true;
+			return await _database.ShowRepository.AddShowAsync(show);
 		}
 	}
 }

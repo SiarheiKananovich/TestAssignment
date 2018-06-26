@@ -1,8 +1,8 @@
-﻿using BusinessLogic.Interfaces;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using BusinessLogic.Interfaces;
 using BusinessLogic.Services;
 using Database;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace BusinessLogic
 {

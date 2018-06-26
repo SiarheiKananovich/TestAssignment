@@ -29,11 +29,9 @@ namespace Server.Controllers
 		// POST api/v1/tvmaze/shows/import
 		[Route("import")]
 		[HttpPost]
-		public async Task<JsonResult> Import([FromBody][Required]int id)
+		public async Task Import([FromBody][Required]int id)
 		{
-			var shows = await _tvMazeShowsService.ImportTvMazeShowAsync(id);
-
-			return new JsonResult(shows);
+			await _tvMazeShowsService.ImportTvMazeShowAsync(id);
 		}
 	}
 }

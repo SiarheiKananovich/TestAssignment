@@ -38,21 +38,17 @@ namespace Server.Controllers
 
 		// PUT api/v1/shows/5
 		[HttpPut("{id}")]
-		public async Task<JsonResult> Put(int id, [FromBody] ApiShow show)
+		public async Task Put(int id, [FromBody] ApiShow show)
 		{
 			show.Id = id;
-			var result = await _showService.AddShowAsync(show);
-
-			return new JsonResult(result);
+			await _showService.AddShowAsync(show);
 		}
 
 		// DELETE api/v1/shows/5
 		[HttpDelete("{id}")]
-		public async Task<JsonResult> Delete(int id)
+		public async Task Delete(int id)
 		{
-			var result = await _showService.DeleteShowAsync(id);
-
-			return new JsonResult(result);
+			await _showService.DeleteShowAsync(id);
 		}
 	}
 }

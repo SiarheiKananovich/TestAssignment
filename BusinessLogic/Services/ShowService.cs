@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
 using BusinessLogic.Exceptions;
 using BusinessLogic.Interfaces;
 using Database;
+using Database.Exceptions;
+using Database.Interfaces;
 using Database.Models;
 using Microsoft.EntityFrameworkCore;
 using Server.Models;
@@ -13,11 +16,11 @@ namespace BusinessLogic.Services
 {
 	public class ShowsService : IShowsService
 	{
-		private readonly DatabaseContext _database;
+		private readonly IDatabase _database;
 		private readonly IMapper _mapper;
 
 
-		public ShowsService(DatabaseContext database, IMapper mapper)
+		public ShowsService(IDatabase database, IMapper mapper)
 		{
 			_database = database;
 			_mapper = mapper;
@@ -26,57 +29,49 @@ namespace BusinessLogic.Services
 
 		public async Task<IEnumerable<ApiShow>> GetShowsAsync(int skip, int take)
 		{
-			try
-			{
-				var shows = await _database
-					.Shows
-					.Include(show => show.Casts)
-					.AsNoTracking()
-					.OrderBy(show => show.Name)
-					.Skip(skip)
-					.Take(take)
-					.ToListAsync();
+			var shows = await _database.ShowRepository.GetShowsAsync(skip, take);
 
-				return _mapper.MapCollection<Show, ApiShow>(shows);
-			}
-			catch (DbException exception)
-			{
-				throw new ServiceException("An error occurred while executing the database query.", exception);
-			}
+			return _mapper.MapCollection<Show, ApiShow>(shows);
 		}
 
 		public async Task<ApiShow> GetShowAsync(int id)
 		{
-			var show = await _database
-				.Shows
-				.AsNoTracking()
-				.SingleOrDefaultAsync(item => item.Id == id);
+			var show = await _database.ShowRepository.GetShowAsync(id);
 
 			return _mapper.Map<Show, ApiShow>(show);
 		}
 
-		public async Task<bool> AddShowAsync(ApiShow apiSHow)
+		public async Task<bool> AddShowAsync(ApiShow apiShow)
 		{
-			var show = _mapper.Map<ApiShow, Show>(apiSHow);
+			var show = _mapper.Map<ApiShow, Show>(apiShow);
 
-			show.Id = 0;
-			_database.Shows.Add(show);
-			await _database.SaveChangesAsync();
+			if ()
 
-			return true;
+			try
+			{
+				return await _database.ShowRepository.AddShowAsync(show);
+			}
+			catch (DatabaseException exception)
+			{
+				throw new BusinessLogicException($"Internal error: failed to add a '{apiShow.Name}' show.", exception);
+			}
 		}
 
 		public async Task<bool> DeleteShowAsync(int id)
 		{
-			var show = await _database
-				.Shows
-				.AsNoTracking()
-				.SingleOrDefaultAsync(item => item.Id == id);
+			try
+			{
+				return await _database.ShowRepository.DeleteShowAsync(id);
+			}
+			catch (DatabaseException exception)
+			{
+				throw new BusinessLogicException($"Internal error: failed to delete show with id={id}.", exception);
+			}
+		}
 
-			_database.Shows.Remove(show);
-			await _database.SaveChangesAsync();
-
-			return true;
+		private bool IsShowValidForAdding()
+		{
+			
 		}
 	}
 }
