@@ -28,6 +28,7 @@ namespace Server.Middleware
 			}
 			catch (BusinessLogicException exception)
 			{
+				// TODO add strings to constants
 				_logger.LogError(exception, "A BusinessLogicException exception occurred.");
 
 				if (context.Response.HasStarted)

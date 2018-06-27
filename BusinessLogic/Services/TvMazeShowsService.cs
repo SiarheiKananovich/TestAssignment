@@ -35,7 +35,7 @@ namespace BusinessLogic.Services
 
 		public async Task<(IEnumerable<ApiShow>, ApiError)> GetShowsAsync(string query)
 		{
-			string requestUrl = _configuration["TvMazeApi:ShowsSearchUrl"];
+			string requestUrl = _configuration[Defines.Config.TVMAZE_API_SHOWS_SEARCH];
 			requestUrl = String.Format(requestUrl, query);
 			IEnumerable<TvMazeShowData> tvMazeShows = null;
 
@@ -48,13 +48,13 @@ namespace BusinessLogic.Services
 			}
 			catch (HttpRequestException exception)
 			{
-				_logger.LogError(exception, "TvMazeApi not available. Error message: {0}", exception.Message);
-				return (null, new ApiError { StatusCode = HttpStatusCode.InternalServerError, Message = "Failed to obtain TvMazeSHow, TvMazeApi service not available." });
+				_logger.LogError(exception, String.Format(Defines.ErrorLog.TVMAZE_API_NOT_AVAILABLE, exception.Message));
+				return (null, new ApiError { StatusCode = HttpStatusCode.InternalServerError, Message = Defines.Error.TVMAZE_API_NOT_AVAILABLE });
 			}
 			catch (JsonReaderException exception)
 			{
-				_logger.LogError(exception, "Invalid data received for TvMazeApi request. Error message: {0}", exception.Message);
-				return (null, new ApiError { StatusCode = HttpStatusCode.InternalServerError, Message = "Failed to obtain TvMazeSHow, TvMazeApi service not available." });
+				_logger.LogError(exception, String.Format(Defines.ErrorLog.TVMAZE_API_NOT_AVAILABLE, exception.Message));
+				return (null, new ApiError { StatusCode = HttpStatusCode.InternalServerError, Message = Defines.Error.TVMAZE_API_NOT_AVAILABLE });
 			}
 
 			return (_mapper.MapCollection<TvMazeShowData, ApiShow>(tvMazeShows), null);
