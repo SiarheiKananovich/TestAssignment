@@ -6,9 +6,9 @@ namespace BusinessLogic.Interfaces
 {
 	public interface IShowsService
 	{
-		Task<IEnumerable<ApiShow>> GetShowsAsync(int skip, int take);
-		Task<ApiShow> GetShowAsync(int id);
-		Task AddShowAsync(ApiShow apiShow);
-		Task<bool> DeleteShowAsync(int id);
+		Task<(IEnumerable<ApiShow>, ApiError)> GetShowsAsync(int skip, int take);
+		Task<(ApiShow, ApiError)> GetShowAsync(int id);
+		Task<ApiError> AddShowAsync(ApiShow apiShow);
+		Task<ApiError> DeleteShowAsync(int id);
 	}
 }

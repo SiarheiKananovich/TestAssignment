@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using BusinessLogic.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Server.Models;
 
 namespace Server.Controllers
 {
@@ -20,9 +21,14 @@ namespace Server.Controllers
 
 		// GET api/v1/tvmaze/shows?query=game
 		[HttpGet]
-		public async Task<JsonResult> Get([FromQuery][Required]string query)
+		public async Task<ActionResult> Get([FromQuery][Required]string query)
 		{
-			var shows = await _tvMazeShowsService.GetShowsAsync(query);
+			var (shows, error) = await _tvMazeShowsService.GetShowsAsync(query);
+
+			if (error != null)
+			{
+				return GetApiErrorResponse(error);
+			}
 
 			return new JsonResult(shows);
 		}
@@ -30,9 +36,25 @@ namespace Server.Controllers
 		// POST api/v1/tvmaze/shows/import
 		[Route("import")]
 		[HttpPost]
-		public async Task Import([FromBody][Required]int id)
+		public async Task<ActionResult> Import([FromBody][Required]int id)
 		{
-			await _tvMazeShowsService.ImportTvMazeShowAsync(id);
+			var error = await _tvMazeShowsService.ImportTvMazeShowAsync(id);
+
+			if (error != null)
+			{
+				return GetApiErrorResponse(error);
+			}
+
+			return Ok();
+		}
+
+
+		private ObjectResult GetApiErrorResponse(ApiError error)
+		{
+			return StatusCode((int)error.StatusCode, new
+			{
+				ErrorMessage = error.Message
+			});
 		}
 	}
 }

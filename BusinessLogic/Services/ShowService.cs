@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using BusinessLogic.Exceptions;
 using BusinessLogic.Interfaces;
@@ -23,60 +24,96 @@ namespace BusinessLogic.Services
 		}
 
 
-		public async Task<IEnumerable<ApiShow>> GetShowsAsync(int skip, int take)
+		public async Task<(IEnumerable<ApiShow>, ApiError)> GetShowsAsync(int skip, int take)
 		{
+			if (!ValidateGetShowParams(skip, take, out var error))
+			{
+				return (null, error);
+			}
+
 			var shows = await _database.ShowRepository.GetShowsAsync(skip, take);
 
-			return _mapper.MapCollection<Show, ApiShow>(shows);
+			return (_mapper.MapCollection<Show, ApiShow>(shows), null);
 		}
 
-		public async Task<ApiShow> GetShowAsync(int id)
+		public async Task<(ApiShow, ApiError)> GetShowAsync(int id)
 		{
 			var show = await _database.ShowRepository.GetShowAsync(id);
 
-			return _mapper.Map<Show, ApiShow>(show);
+			if (show == null)
+			{
+				return (null, new ApiError {StatusCode = HttpStatusCode.NotFound, Message = $"Show with id={id} does not exist."});
+			}
+
+			return (_mapper.Map<Show, ApiShow>(show), null);
 		}
 
-		public async Task AddShowAsync(ApiShow apiShow)
+		public async Task<ApiError> AddShowAsync(ApiShow apiShow)
 		{
 			var show = _mapper.Map<ApiShow, Show>(apiShow);
 
-			if (!IsShowValidForAdding(show, out var errorMessage))
+			if (!ValidateAddShowParams(show, out var error))
 			{
-				return;
+				return error;
 			}
 
 			try
 			{
 				await _database.ShowRepository.AddShowAsync(show);
 			}
-			catch (DatabaseException exception)
+			catch (DatabaseException)
 			{
-				throw new BusinessLogicException($"Internal error: failed to add a '{apiShow.Name}' show.", exception);
+				return new ApiError { StatusCode = HttpStatusCode.InternalServerError, Message = $"Internal error: failed to add a '{apiShow.Name}' show." };
 			}
+
+			return null;
 		}
 
-		public async Task<bool> DeleteShowAsync(int id)
+		public async Task<ApiError> DeleteShowAsync(int id)
 		{
 			try
 			{
-				return await _database.ShowRepository.DeleteShowAsync(id);
+				var deleted = await _database.ShowRepository.DeleteShowAsync(id);
+
+				if (!deleted)
+				{
+					return new ApiError { StatusCode = HttpStatusCode.NotFound, Message = $"Show with id={id} does not exist."};
+				}
 			}
-			catch (DatabaseException exception)
+			catch (DatabaseException)
 			{
-				throw new BusinessLogicException($"Internal error: failed to delete show with id={id}.", exception);
+				return new ApiError { StatusCode = HttpStatusCode.InternalServerError, Message = $"Internal error: failed to delete a show with id={id}." };
 			}
+
+			return null;
 		}
 
-		private bool IsShowValidForAdding(Show show, out string errorMessage)
-		{
-			errorMessage = null;
 
-			if (String.IsNullOrEmpty(show.Name))
+		private bool ValidateGetShowParams(int skip, int take, out ApiError error)
+		{
+			if (skip < 0 || take <= 0)
 			{
+				error = new ApiError
+					{
+						StatusCode = HttpStatusCode.BadRequest,
+						Message = $"Invalid params: use 'skip' < 0 and 'take' <= 0."
+					};
 				return false;
 			}
 
+			error = null;
+			return true;
+		}
+
+		private bool ValidateAddShowParams(Show show, out ApiError error)
+		{
+			if (String.IsNullOrEmpty(show.Name))
+			{
+				error = new ApiError { StatusCode = HttpStatusCode.BadRequest, Message = "Invalid 'name' value: should be not null or empty." };
+				return false;
+			}
+
+			error = null;
 			return true;
 		}
 	}

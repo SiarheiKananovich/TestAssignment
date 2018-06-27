@@ -44,6 +44,7 @@ namespace Database.Repositories
 		{
 			var show = await _database
 				.Shows
+				.Include(showItem => showItem.Casts)
 				.AsNoTracking()
 				.SingleOrDefaultAsync(item => item.Id == id);
 

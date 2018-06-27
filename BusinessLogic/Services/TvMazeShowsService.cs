@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using BusinessLogic.DataModels;
 using BusinessLogic.Interfaces;
+using Database.Exceptions;
 using Database.Interfaces;
 using Database.Models;
 using Microsoft.Extensions.Configuration;
@@ -31,7 +33,7 @@ namespace BusinessLogic.Services
 		}
 
 
-		public async Task<IEnumerable<ApiShow>> GetShowsAsync(string query)
+		public async Task<(IEnumerable<ApiShow>, ApiError)> GetShowsAsync(string query)
 		{
 			string requestUrl = _configuration["TvMazeApi:ShowsSearchUrl"];
 			requestUrl = String.Format(requestUrl, query);
@@ -47,25 +49,46 @@ namespace BusinessLogic.Services
 			catch (HttpRequestException exception)
 			{
 				_logger.LogError(exception, "TvMazeApi not available. Error message: {0}", exception.Message);
-				throw;
+				return (null, new ApiError { StatusCode = HttpStatusCode.InternalServerError, Message = "Failed to obtain TvMazeSHow, TvMazeApi service not available." });
 			}
 			catch (JsonReaderException exception)
 			{
 				_logger.LogError(exception, "Invalid data received for TvMazeApi request. Error message: {0}", exception.Message);
-				throw;
+				return (null, new ApiError { StatusCode = HttpStatusCode.InternalServerError, Message = "Failed to obtain TvMazeSHow, TvMazeApi service not available." });
 			}
 
-			return _mapper.MapCollection<TvMazeShowData, ApiShow>(tvMazeShows);
+			return (_mapper.MapCollection<TvMazeShowData, ApiShow>(tvMazeShows), null);
 		}
 
-		public async Task<bool> ImportTvMazeShowAsync(int id)
+		public async Task<ApiError> ImportTvMazeShowAsync(int id)
 		{
 			var tvMazeShow = await GetTvMazeShowFromApiAsync(id);
-			tvMazeShow.Casts = await GetTvMazeCastsFromApiAsync(id);
+
+			if (tvMazeShow != null)
+			{
+				tvMazeShow.Casts = await GetTvMazeCastsFromApiAsync(id);
+			}
+
+			if (tvMazeShow == null || tvMazeShow.Casts == null)
+			{
+				return new ApiError { StatusCode = HttpStatusCode.InternalServerError, Message = "Failed to obtain TvMazeSHow, TvMazeApi service not available." };
+			}
 
 			Show show = _mapper.Map<TvMazeShowData, Show>(tvMazeShow);
 
-			return IsShowModelValidForImport(show) && await TryAddNewShowAsync(show);
+			try
+			{
+				if (IsShowModelValidForImport(show))
+				{
+					await _database.ShowRepository.AddShowAsync(show);
+				}
+			}
+			catch (DatabaseException)
+			{
+				return new ApiError { StatusCode = HttpStatusCode.InternalServerError, Message = $"Failed to update database with TvMazeSHow id={id}." };
+			}
+
+			return null;
 		}
 
 
@@ -125,11 +148,6 @@ namespace BusinessLogic.Services
 		private bool IsShowModelValidForImport(Show show)
 		{
 			return String.IsNullOrWhiteSpace(show.Name) == false;
-		}
-
-		private async Task<bool> TryAddNewShowAsync(Show show)
-		{
-			return await _database.ShowRepository.AddShowAsync(show);
 		}
 	}
 }

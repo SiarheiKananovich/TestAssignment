@@ -6,7 +6,7 @@ namespace BusinessLogic.Interfaces
 {
 	public interface ITvMazeShowsService
 	{
-		Task<IEnumerable<ApiShow>> GetShowsAsync(string query);
-		Task<bool> ImportTvMazeShowAsync(int id);
+		Task<(IEnumerable<ApiShow>, ApiError)> GetShowsAsync(string query);
+		Task<ApiError> ImportTvMazeShowAsync(int id);
 	}
 }

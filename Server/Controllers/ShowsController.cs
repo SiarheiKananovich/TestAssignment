@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using BusinessLogic.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Server.Models;
 
@@ -20,35 +21,68 @@ namespace Server.Controllers
 
 		// GET api/v1/shows?skip=2&take=3
 		[HttpGet]
-		public async Task<JsonResult> Get([FromQuery][Required]int skip, [FromQuery][Required]int take)
+		public async Task<ActionResult> Get([FromQuery][Required]int skip, [FromQuery][Required]int take)
 		{
-			var shows = await _showService.GetShowsAsync(skip, take);
+			var (shows, error) = await _showService.GetShowsAsync(skip, take);
+
+			if (error != null)
+			{
+				return GetApiErrorResponse(error);
+			}
 
 			return new JsonResult(shows);
 		}
 
 		// GET api/v1/shows/5
 		[HttpGet("{id}")]
-		public async Task<JsonResult> Get(int id)
+		public async Task<ActionResult> Get(int id)
 		{
-			var show = await _showService.GetShowAsync(id);
+			var (show, error) = await _showService.GetShowAsync(id);
+
+			if (error != null)
+			{
+				return GetApiErrorResponse(error);
+			}
 
 			return new JsonResult(show);
 		}
 
 		// PUT api/v1/shows/5
 		[HttpPut("{id}")]
-		public async Task Put(int id, [FromBody] ApiShow show)
+		public async Task<ActionResult> Put(int id, [FromBody] ApiShow show)
 		{
 			show.Id = id;
-			await _showService.AddShowAsync(show);
+			var error = await _showService.AddShowAsync(show);
+
+			if (error != null)
+			{
+				return GetApiErrorResponse(error);
+			}
+
+			return Ok();
 		}
 
 		// DELETE api/v1/shows/5
 		[HttpDelete("{id}")]
-		public async Task Delete(int id)
+		public async Task<ActionResult> Delete(int id)
 		{
-			await _showService.DeleteShowAsync(id);
+			var error = await _showService.DeleteShowAsync(id);
+
+			if (error != null)
+			{
+				return GetApiErrorResponse(error);
+			}
+
+			return Ok();
+		}
+
+
+		private ObjectResult GetApiErrorResponse(ApiError error)
+		{
+			return StatusCode((int)error.StatusCode, new
+			{
+				ErrorMessage = error.Message
+			});
 		}
 	}
 }
