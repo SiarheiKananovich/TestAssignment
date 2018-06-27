@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Common;
-using System.Linq;
 using System.Threading.Tasks;
 using BusinessLogic.Exceptions;
 using BusinessLogic.Interfaces;
-using Database;
 using Database.Exceptions;
 using Database.Interfaces;
 using Database.Models;
-using Microsoft.EntityFrameworkCore;
 using Server.Models;
 
 namespace BusinessLogic.Services

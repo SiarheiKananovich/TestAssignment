@@ -17,6 +17,7 @@ namespace Server.Controllers
 			_tvMazeShowsService = tvMazeShowsService;
 		}
 
+
 		// GET api/v1/tvmaze/shows?query=game
 		[HttpGet]
 		public async Task<JsonResult> Get([FromQuery][Required]string query)

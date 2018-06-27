@@ -5,72 +5,62 @@
     <title>TestAssignment</title>
     <script src="scripts/jquery-3.3.1.min.js"></script>
     <script src="scripts/main.js"></script>
-    <script>
-        let getTvMazeShowsApiUrl = "api/v1/tvmaze/shows?query=";
-        let importTvMazeShowApiUrl = "api/v1/tvmaze/shows/import";
-
-        function loadTvMazeShows() {
-            let apiUrl = getTvMazeShowsApiUrl + $('#search-input').val();
-
-            $.ajax({
-                url: apiUrl,
-                type: "GET",
-                contentType: "application/json",
-                success: function (shows) {
-                    DrawTvMazeTable(shows);
-                },
-                error: function (http) {
-                    alert("Error: Status code: " + http.status + " Message: " + http.responseText);
-                }
-            });
-        };
-
-        function DrawTvMazeTable(shows) {
-            var table = '<table class="usersTable">';
-
-            table += '<tr>';
-            table += '<th> Id </th>';
-            table += '<th> Name </th>';
-            table += '<th> Actions </th>';
-            table += '</tr>';
-
-            for (var i = 0; i < shows.length; i++) {
-                table += '<tr>';
-                table += '<td>' + shows[i].id + '</td>';
-                table += '<td>' + shows[i].name + '</td>';
-                table += '<td> <button onclick="importTvMazeShow(' + shows[i].id + ');">Import</button></td>';
-                table += '</tr>';
-            }
-
-            table += '</table>';
-
-            $('#tvmaze-table-container').html(table);
+    <style>
+        * {
+            font-family: 'Roboto', sans-serif;
         }
 
-        function importTvMazeShow(id) {
-            let apiUrl = importTvMazeShowApiUrl;
-
-            $.ajax({
-                url: apiUrl,
-                type: "POST",
-                data: JSON.stringify(id),
-                contentType: "application/json",
-                success: function (http) {
-                    alert("Done: show=" + id + " successfully imported!");
-                },
-                error: function (http) {
-                    alert("Error: show=" + id + " not imported! Status code: " + http.status);
-                }
-            });
+        .main {
+            margin-left: 100px;
+            margin-top: 50px;
         }
-    </script>
+
+        .section {
+            float: left;
+            margin: 50px;
+            background-color: aliceblue;
+            padding: 30px;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        }
+
+        .showsTable {
+            width: 100%;
+        }
+
+        .showsTable th {
+            height: 20px;
+        }
+
+        .showsTable td {
+            height: 10px;
+        }
+
+        .showsTable th, td {
+            padding: 5px;
+            text-align: left;
+        }
+
+        #tvmaze-table-container {
+            overflow-y: scroll;
+            max-height: 600px;
+        }
+    </style>
 </head>
 <body>
-    <h3>Api testing page</h3>
-    <div>
+    <div class="section">
+        <h3>TvMaze shows import</h3>
         <input type="text" id="search-input" /><button onclick="loadTvMazeShows();">Search TvMaze shows</button>
         <div id="tvmaze-table-container"></div>
     </div>
-    
+    <div class="section">
+        <h3>Api requests</h3>
+        GET api/v1/shows?skip=2&take=3 ([FromQuery][Required]int skip, [FromQuery][Required]int take)<br />
+        GET api/v1/shows/5<br />
+        PUT api/v1/shows/5 ([FromBody] ApiShow show)<br />
+        DELETE api/v1/shows/5<br />
+
+        GET api/v1/tvmaze/shows?query=game ([FromQuery][Required]string query)<br />
+        POST api/v1/tvmaze/shows/import ([FromBody][Required]int id)<br />
+    </div>
 </body>
 </html>

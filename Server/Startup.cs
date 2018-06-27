@@ -33,12 +33,13 @@ namespace Server
 			else
 			{
 				app.UseSilentExceptionHandler();
-				app.UseHsts();
+				// Uncomment if HTTPS required
+				//app.UseHsts();
 			}
 
 			app.UseStatusCodePagesWithReExecute("/errors/{0}.html");
-
-			app.UseHttpsRedirection();
+			// Uncomment if HTTPS required
+			//app.UseHttpsRedirection();
 			app.UseDefaultFiles();
 			app.UseStaticFiles();
 			app.UseMvc();
