@@ -20,24 +20,32 @@ namespace Database.Repositories
 
 		public async Task<IEnumerable<Show>> GetShowsAsync(int skip, int take)
 		{
-			try
-			{
-				var shows = await _database
-					.Shows
-					.Include(show => show.Casts)
-					.AsNoTracking()
-					.OrderBy(show => show.Name)
-					.Skip(skip)
-					.Take(take)
-					.ToListAsync();
+			var shows = await _database
+				.Shows
+				.Include(show => show.Casts)
+				.AsNoTracking()
+				.OrderBy(show => show.Name)
+				.Skip(skip)
+				.Take(take)
+				.ToListAsync();
 
-				return shows.ToList();
-			}
-			catch (Exception e)
+			foreach (var show in shows)
 			{
-				Console.WriteLine(e);
-				throw;
+				if (show?.Casts != null)
+				{
+					show.Casts = show.Casts.OrderByDescending(cast => cast.Birthday ?? DateTime.MaxValue).ToList();
+				}
 			}
+
+			//// The same query but with big impact on database performance
+			//var query = from showItem in _database.Shows
+			//			join castItem in 
+			//				(from cast in _database.Casts
+			//				orderby cast.Birthday.HasValue descending, cast.Birthday
+			//				select cast) on showItem.Id equals castItem.Id
+			//			select showItem;
+
+			return shows;
 		}
 
 		public async Task<Show> GetShowAsync(int id)
@@ -46,12 +54,26 @@ namespace Database.Repositories
 				.Shows
 				.Include(showItem => showItem.Casts)
 				.AsNoTracking()
-				.SingleOrDefaultAsync(item => item.Id == id);
+				.OrderBy(showItem => showItem.Name)
+				.SingleOrDefaultAsync(showItem => showItem.Id == id);
+
+			if (show?.Casts != null)
+			{
+				show.Casts = show.Casts.OrderByDescending(cast => cast.Birthday ?? DateTime.MaxValue).ToList();
+			}
+
+			//// The same query but with big impact on database performance
+			//var query = from showItem in _database.Shows
+			//			join castItem in 
+			//				(from cast in _database.Casts
+			//				orderby cast.Birthday.HasValue descending, cast.Birthday
+			//				select cast) on showItem.Id equals castItem.Id
+			//			select showItem;
 
 			return show;
 		}
 
-		public async Task<bool> AddShowAsync(Show show)
+		public async Task AddShowAsync(Show show)
 		{
 			show.Id = 0;
 			if (show.Casts != null)
@@ -67,13 +89,10 @@ namespace Database.Repositories
 				_database.Shows.Add(show);
 				await _database.SaveChangesAsync();
 			}
-			catch (Exception exception)
+			catch (DbUpdateException exception)
 			{
-
-				return false;
+				throw new DatabaseException("Database update error occured.", exception);
 			}
-
-			return true;
 		}
 
 		public async Task<bool> DeleteShowAsync(int id)
@@ -99,6 +118,45 @@ namespace Database.Repositories
 			}
 
 			return true;
+		}
+
+		public async Task<bool> IsTvMazeShowImportedAsync(int tvMazeShowId)
+		{
+			var externalShowMap = await _database
+				.ExternalShowMap
+				.AsNoTracking()
+				.SingleOrDefaultAsync(map => map.TvMazeShowId == tvMazeShowId);
+
+			if (externalShowMap == null)
+			{
+				return false;
+			}
+
+			return true;
+		}
+
+		public async Task AddTvMazeShowAsync(int tvMazeShowId, Show show)
+		{
+			if (tvMazeShowId == 0 || show == null)
+			{
+				throw new ArgumentException($"{nameof(tvMazeShowId)} {nameof(show)}");
+			}
+
+			var showMap = new ExternalShowMap
+			{
+				Show = show,
+				TvMazeShowId = tvMazeShowId
+			};
+
+			try
+			{
+				_database.ExternalShowMap.Add(showMap);
+				await _database.SaveChangesAsync();
+			}
+			catch (DbUpdateException exception)
+			{
+				throw new DatabaseException("Database update error occured.", exception);
+			}
 		}
 	}
 }

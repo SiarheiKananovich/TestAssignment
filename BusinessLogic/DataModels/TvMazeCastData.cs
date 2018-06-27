@@ -6,6 +6,6 @@ namespace BusinessLogic.DataModels
 	public class TvMazeCastData
 	{
 		[JsonProperty(PropertyName = "person")]
-		public TvMazerPerson Person { get; set; }
+		public TvMazePersonData Person { get; set; }
 	}
 }

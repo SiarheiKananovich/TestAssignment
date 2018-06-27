@@ -10,6 +10,7 @@ namespace Database.Models
 		public int Id { get; set; }
 
 		public int ShowId { get; set; }
+
 		public Show Show { get; set; }
 
 		[Required]

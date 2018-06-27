@@ -4,24 +4,14 @@
     <meta charset="utf-8" />
     <title>TestAssignment</title>
     <link rel="stylesheet" href="styles/main.css">
-    <script src="scripts/jquery-3.3.1.min.js"></script>
-    <script src="scripts/main.js"></script>
 </head>
 <body>
-    <div class="section">
-        <h3>TvMaze shows import</h3>
-        <input type="text" id="search-input" /><button onclick="loadTvMazeShows();">Search TvMaze shows</button>
-        <div id="tvmaze-table-container"></div>
-    </div>
     <div class="section">
         <h3>Api requests</h3>
         GET api/v1/shows?skip=2&take=3 ([FromQuery][Required]int skip, [FromQuery][Required]int take)<br />
         GET api/v1/shows/5<br />
         POST api/v1/shows ([FromBody] ApiShow show)<br />
         DELETE api/v1/shows/5<br /><br />
-
-        GET api/v1/tvmaze/shows?query=game ([FromQuery][Required]string query)<br />
-        POST api/v1/tvmaze/shows/import ([FromBody][Required]int id)<br />
     </div>
 </body>
 </html>

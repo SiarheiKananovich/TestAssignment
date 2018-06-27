@@ -3,7 +3,7 @@
 namespace BusinessLogic.DataModels
 {
 	[JsonObject(MemberSerialization.OptIn)]
-	public class TvMazerPerson
+	public class TvMazePersonData
 	{
 		[JsonProperty(PropertyName = "id")]
 		public int Id { get; set; }

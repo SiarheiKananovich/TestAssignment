@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Server.Models;
+using BusinessLogic.Models;
 
 namespace BusinessLogic.Interfaces
 {
 	public interface ITvMazeShowsService
 	{
-		Task<(IEnumerable<ApiShow>, ApiError)> GetShowsAsync(string query);
-		Task<ApiError> ImportTvMazeShowAsync(int id);
+		Task<IEnumerable<TvMazeShowModel>> GetTvMazeShowsAsync();
+		Task ImportTvMazeShowAsync(TvMazeShowModel tvMazeShow);
+		Task<bool> IsTvMazeShowImportedAsync(int tvMazeShowId);
 	}
 }

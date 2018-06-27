@@ -15,5 +15,7 @@ namespace Database.Models
 
 		[InverseProperty("Show")]
 		public List<Cast> Casts { get; set; }
+
+		public ExternalShowMap TvMazeShowMap { get; set; }
 	}
 }

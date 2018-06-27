@@ -5,6 +5,7 @@
 		public static class Config
 		{
 			public const string TVMAZE_API_SHOWS_SEARCH = "TvMazeApi:ShowsSearchUrl";
+			public const string TVMAZE_SCRAPPER_UPDATE_PERIOD = "TvMazeApi:ScrapperUpdatePeriodInMinutes";
 		}
 
 		public static class ErrorLog
@@ -12,6 +13,8 @@
 			public const string INVALID_PARAMS = "Invalid params received";
 			public const string INTERNAL_ERROR = "Internal error: {0}";
 			public const string TVMAZE_API_NOT_AVAILABLE = "TvMazeApi not available. Error message: {0}";
+			public const string TVMAZE_API_NOT_RECEIVED = "TvMaze show not correctly received.";
+			public const string TVMAZE_SHOW_DATABASE_IMPORT_FAILED = "An error ocured on database update";
 		}
 
 		public static class Error
@@ -23,6 +26,8 @@
 			public const string INVALID_SHOW_NAME_PARAM_EMPTY= "Invalid 'name' param value: should be not null or empty.";
 
 			public const string TVMAZE_API_NOT_AVAILABLE = "Failed to obtain TvMazeSHow, TvMazeApi service not available.";
+			public const string TVMAZE_API_NOT_RECEIVED = "TvMaze show not correctly received.";
+			public const string TVMAZE_SHOW_DATABASE_IMPORT_FAILED = "An error ocured on database update";
 		}
 	}
 }

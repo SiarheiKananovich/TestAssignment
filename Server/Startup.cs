@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Server.Middleware;
 using BusinessLogic;
+using TvMazeScraperHostedService;
 
 namespace Server
 {
@@ -20,6 +21,8 @@ namespace Server
 		public void ConfigureServices(IServiceCollection services)
 		{
 			BusinessLogicConfigurator.ConfigureServices(Configuration, services);
+
+			services.AddHostedService<TvMazeScraper>();
 
 			services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 		}

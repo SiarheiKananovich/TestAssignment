@@ -16,6 +16,7 @@
   <ItemGroup>
     <ProjectReference Include="..\BusinessLogic\BusinessLogic.csproj" />
     <ProjectReference Include="..\Server.Models\Server.Models.csproj" />
+    <ProjectReference Include="..\TvMazeScraperHostedService\TvMazeScraperHostedService.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -8,7 +8,9 @@ namespace Database.Interfaces
 	{
 		Task<IEnumerable<Show>> GetShowsAsync(int skip, int take);
 		Task<Show> GetShowAsync(int id);
-		Task<bool> AddShowAsync(Show show);
+		Task AddShowAsync(Show show);
 		Task<bool> DeleteShowAsync(int id);
+		Task<bool> IsTvMazeShowImportedAsync(int tvMazeShowId);
+		Task AddTvMazeShowAsync(int tvMazeShowId, Show show);
 	}
 }

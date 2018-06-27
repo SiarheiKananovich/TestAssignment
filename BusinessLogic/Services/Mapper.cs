@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BusinessLogic.DataModels;
 using BusinessLogic.Interfaces;
+using BusinessLogic.Models;
 using Database.Models;
 using Server.Models;
 
@@ -21,9 +22,10 @@ namespace BusinessLogic.Services
 			RegisterMapping<Cast, ApiCast>(Map);
 			RegisterMapping<ApiShow, Show>(Map);
 			RegisterMapping<ApiCast, Cast>(Map);
-			RegisterMapping<TvMazeShowData, ApiShow>(Map);
-			RegisterMapping<TvMazeShowData, Show>(MapTvMazeShowDataToShow);
-			RegisterMapping<TvMazerPerson, Cast>(Map);
+			RegisterMapping<TvMazeShowData, TvMazeShowModel>(Map);
+			RegisterMapping<TvMazePersonData, TvMazeCastModel>(Map);
+			RegisterMapping<TvMazeShowModel, Show>(Map);
+			RegisterMapping<TvMazeCastModel, Cast>(Map);
 		}
 
 
@@ -137,22 +139,22 @@ namespace BusinessLogic.Services
 				};
 		}
 
-		private ApiShow Map(TvMazeShowData data)
+		private TvMazeShowModel Map(TvMazeShowData data)
 		{
 			return data == null
 				? null
-				: new ApiShow
+				: new TvMazeShowModel
 				{
 					Id = data.Id,
 					Name = data.Name
 				};
 		}
 
-		private Cast Map(TvMazerPerson data)
+		private TvMazeCastModel Map(TvMazePersonData data)
 		{
 			return data == null
 				? null
-				: new Cast
+				: new TvMazeCastModel
 				{
 					Id = data.Id,
 					Name = data.Name,
@@ -160,7 +162,7 @@ namespace BusinessLogic.Services
 				};
 		}
 
-		private Show MapTvMazeShowDataToShow(TvMazeShowData data)
+		private Show Map(TvMazeShowModel data)
 		{
 			return data == null
 				? null
@@ -168,7 +170,19 @@ namespace BusinessLogic.Services
 				{
 					Id = data.Id,
 					Name = data.Name,
-					Casts = MapCollection<TvMazerPerson, Cast>(data.Casts).ToList()
+					Casts = MapCollection<TvMazeCastModel, Cast>(data.Casts).ToList()
+				};
+		}
+
+		private Cast Map(TvMazeCastModel data)
+		{
+			return data == null
+				? null
+				: new Cast
+				{
+					Id = data.Id,
+					Name = data.Name,
+					Birthday = data.Birthday
 				};
 		}
 	}

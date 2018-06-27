@@ -12,6 +12,6 @@ namespace BusinessLogic.DataModels
 		[JsonProperty(PropertyName = "name")]
 		public string Name { get; set; }
 
-		public IEnumerable<TvMazerPerson> Casts { get; set; }
+		public IEnumerable<TvMazePersonData> Casts { get; set; }
 	}
 }
