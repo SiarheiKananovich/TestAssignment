@@ -47,11 +47,10 @@ namespace Server.Controllers
 			return new JsonResult(show);
 		}
 
-		// PUT api/v1/shows/5
-		[HttpPut("{id}")]
-		public async Task<ActionResult> Put(int id, [FromBody] ApiShow show)
+		// Post api/v1/shows
+		[HttpPost]
+		public async Task<ActionResult> Put([FromBody] ApiShow show)
 		{
-			show.Id = id;
 			var error = await _showService.AddShowAsync(show);
 
 			if (error != null)

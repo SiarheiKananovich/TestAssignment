@@ -1,0 +1,38 @@
+﻿* {
+    font-family: 'Roboto', sans-serif;
+}
+
+.main {
+    margin-left: 100px;
+    margin-top: 50px;
+}
+
+.section {
+    float: left;
+    margin: 50px;
+    background-color: aliceblue;
+    padding: 30px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.showsTable {
+    width: 100%;
+}
+
+.showsTable th {
+    height: 20px;
+}
+
+.showsTable td {
+    height: 10px;
+}
+
+.showsTable th, td {
+    padding: 5px;
+    text-align: left;
+}
+
+#tvmaze-table-container {
+    overflow-y: scroll;
+    max-height: 600px;
+}

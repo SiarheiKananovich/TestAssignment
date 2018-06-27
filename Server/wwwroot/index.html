@@ -3,48 +3,9 @@
 <head>
     <meta charset="utf-8" />
     <title>TestAssignment</title>
+    <style src="styles/main.css"></style>
     <script src="scripts/jquery-3.3.1.min.js"></script>
     <script src="scripts/main.js"></script>
-    <style>
-        * {
-            font-family: 'Roboto', sans-serif;
-        }
-
-        .main {
-            margin-left: 100px;
-            margin-top: 50px;
-        }
-
-        .section {
-            float: left;
-            margin: 50px;
-            background-color: aliceblue;
-            padding: 30px;
-            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-        }
-
-        .showsTable {
-            width: 100%;
-        }
-
-        .showsTable th {
-            height: 20px;
-        }
-
-        .showsTable td {
-            height: 10px;
-        }
-
-        .showsTable th, td {
-            padding: 5px;
-            text-align: left;
-        }
-
-        #tvmaze-table-container {
-            overflow-y: scroll;
-            max-height: 600px;
-        }
-    </style>
 </head>
 <body>
     <div class="section">
@@ -56,8 +17,8 @@
         <h3>Api requests</h3>
         GET api/v1/shows?skip=2&take=3 ([FromQuery][Required]int skip, [FromQuery][Required]int take)<br />
         GET api/v1/shows/5<br />
-        PUT api/v1/shows/5 ([FromBody] ApiShow show)<br />
-        DELETE api/v1/shows/5<br />
+        POST api/v1/shows ([FromBody] ApiShow show)<br />
+        DELETE api/v1/shows/5<br /><br />
 
         GET api/v1/tvmaze/shows?query=game ([FromQuery][Required]string query)<br />
         POST api/v1/tvmaze/shows/import ([FromBody][Required]int id)<br />

@@ -19,6 +19,8 @@ namespace BusinessLogic.Services
 
 			RegisterMapping<Show, ApiShow>(Map);
 			RegisterMapping<Cast, ApiCast>(Map);
+			RegisterMapping<ApiShow, Show>(Map);
+			RegisterMapping<ApiCast, Cast>(Map);
 			RegisterMapping<TvMazeShowData, ApiShow>(Map);
 			RegisterMapping<TvMazeShowData, Show>(MapTvMazeShowDataToShow);
 			RegisterMapping<TvMazerPerson, Cast>(Map);
@@ -99,11 +101,35 @@ namespace BusinessLogic.Services
 				};
 		}
 
+		private Show Map(ApiShow data)
+		{
+			return data == null
+				? null
+				: new Show
+				{
+					Id = data.Id,
+					Name = data.Name,
+					Casts = MapCollection<ApiCast, Cast>(data.Casts)?.ToList()
+				};
+		}
+
 		private ApiCast Map(Cast data)
 		{
 			return data == null
 				? null
 				: new ApiCast
+				{
+					Id = data.Id,
+					Name = data.Name,
+					Birthday = data.Birthday
+				};
+		}
+
+		private Cast Map(ApiCast data)
+		{
+			return data == null
+				? null
+				: new Cast
 				{
 					Id = data.Id,
 					Name = data.Name,
