@@ -10,67 +10,44 @@ using Newtonsoft.Json;
 using TvMazeScraper.BusinessLogic.DataModels;
 using TvMazeScraper.BusinessLogic.Interface.Interfaces;
 using TvMazeScraper.BusinessLogic.Interface.Models;
+using TvMazeScraper.Database.Interface.Interfaces;
 
 namespace TvMazeScraper.BusinessLogic.Services
 {
 	public class TvMazeScraperService : ITvMazeScraperService
 	{
-		private readonly IConfiguration _configuration;
 		private readonly ILogger<TvMazeScraperService> _logger;
 		private readonly IMapper _mapper;
+		private readonly ITvMazeApiService _tvMazeApiService;
+		private readonly IImportInfoRepository _importInfoRepository;
 
 
-		public TvMazeScraperService(IDatabase database, IConfiguration configuration, ILoggerFactory loggerFactory, IMapper mapper)
+		public TvMazeScraperService(
+			ILogger<TvMazeScraperService> logger, 
+			IMapper mapper, 
+			ITvMazeApiService tvMazeApiService,
+			IImportInfoRepository importInfoRepository)
 		{
-			_database = database;
-			_configuration = configuration;
-			_logger = loggerFactory.CreateLogger<TvMazeScraperService>();
+			_logger = logger;
 			_mapper = mapper;
-		}
-
-
-		public async Task<IEnumerable<TvMazeShowModel>> GetTvMazeShowsAsync()
-		{
-			string requestUrl = _configuration[Defines.Config.TVMAZE_API_SHOWS_SEARCH];
-			IEnumerable<TvMazeShowData> tvMazeShows = null;
-
-			try
-			{
-				var client = new HttpClient();
-				var response = await client.GetStringAsync(requestUrl);
-				var tvMazeSearchData = JsonConvert.DeserializeObject<IEnumerable<TvMazeSearchData>>(response);
-				tvMazeShows = tvMazeSearchData.Select(data => data.Show).ToList();
-			}
-			catch (HttpRequestException exception)
-			{
-				_logger.LogError(exception, String.Format(Defines.ErrorLog.TVMAZE_API_NOT_AVAILABLE, exception.Message));
-				throw new BusinessLogicException(Defines.Error.TVMAZE_API_NOT_AVAILABLE, exception);
-			}
-			catch (JsonReaderException exception)
-			{
-				_logger.LogError(exception, String.Format(Defines.ErrorLog.TVMAZE_API_NOT_AVAILABLE, exception.Message));
-				throw new BusinessLogicException(Defines.Error.TVMAZE_API_NOT_AVAILABLE, exception);
-			}
-
-			return _mapper.MapCollection<TvMazeShowData, TvMazeShowModel>(tvMazeShows);
+			_tvMazeApiService = tvMazeApiService;
+			_importInfoRepository = importInfoRepository;
 		}
 
 		public async Task ImportTvMazeShowAsync(TvMazeShowModel tvMazeShow)
 		{
 			if (tvMazeShow != null)
 			{
-				tvMazeShow.Casts = await GetTvMazeCastsFromApiAsync(tvMazeShow.Id);
+				tvMazeShow.Casts = await _tvMazeApiService.GetTvMazeCastsAsync(tvMazeShow.Id);
 			}
 
 			if (tvMazeShow?.Casts == null)
 			{
-				_logger.LogError(Defines.ErrorLog.TVMAZE_API_NOT_RECEIVED);
-				throw new BusinessLogicException(Defines.Error.TVMAZE_API_NOT_RECEIVED);
+				//todo
+				return;
 			}
 
-			Show show = _mapper.Map<TvMazeShowModel, Show>(tvMazeShow);
-
-			PrepareShowForImport(show);
+			var show = _mapper.Map<ShowData>(tvMazeShow);
 
 			try
 			{
@@ -79,47 +56,19 @@ namespace TvMazeScraper.BusinessLogic.Services
 					await _database.ShowRepository.AddTvMazeShowAsync(tvMazeShow.Id, show);
 				}
 			}
-			catch (DatabaseException exception)
+			catch (Exception exception)
 			{
-				_logger.LogError(exception, Defines.ErrorLog.TVMAZE_SHOW_DATABASE_IMPORT_FAILED);
-				throw new BusinessLogicException(Defines.Error.TVMAZE_SHOW_DATABASE_IMPORT_FAILED);
+				//todo
+				throw;
 			}
 		}
 
 		public Task<bool> IsTvMazeShowImportedAsync(int tvMazeShowId)
 		{
-			return _database.ShowRepository.IsTvMazeShowImportedAsync(tvMazeShowId);
+			return _importInfoRepository.IsImportInfoExistForTvMazeShowAsync(tvMazeShowId);
 		}
 
-
-		private async Task<IEnumerable<TvMazeCastModel>> GetTvMazeCastsFromApiAsync(int id)
-		{
-			string requestUrl = _configuration["TvMazeApi:ShowCasts"];
-			requestUrl = String.Format(requestUrl, id);
-			IEnumerable<TvMazePersonData> tvMazePersons = null;
-
-			try
-			{
-				var client = new HttpClient();
-				var response = await client.GetStringAsync(requestUrl);
-				var tvMazeSearchData = JsonConvert.DeserializeObject<IEnumerable<TvMazeCastData>>(response);
-				tvMazePersons = tvMazeSearchData.Select(data => data.Person).ToList();
-			}
-			catch (HttpRequestException exception)
-			{
-				_logger.LogError(exception, "TvMazeApi not available.");
-				return null;
-			}
-			catch (JsonReaderException exception)
-			{
-				_logger.LogError(exception, "Invalid data received for TvMazeApi request.");
-				return null;
-			}
-
-			return _mapper.Map<IEnumerable<TvMazeCastModel>>(tvMazePersons);
-		}
-
-		private bool IsShowModelValidForImport(Show show)
+		private bool IsShowModelValidForImport(ShowData show)
 		{
 			return String.IsNullOrWhiteSpace(show.Name) == false;
 		}
