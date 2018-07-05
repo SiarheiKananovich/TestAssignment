@@ -12,11 +12,15 @@ namespace TvMazeScraper.BusinessLogic
 		{
 			services
 				.Configure<AppConfig>(configuration.GetSection("App"))
-				.Configure<TvMazeApiConfig>(configuration.GetSection("TvMazeApi"));
+				.Configure<TvMazeApiConfig>(configuration.GetSection("TvMazeApi"))
+				.Configure<ShowsApiConfig>(configuration.GetSection("ShowsApi"));
 
 			services
 				.AddTransient<ITvMazeScraperService, TvMazeScraperService>()
-				.AddTransient<ITvMazeApiService, TvMazeApiService>();
+				.AddTransient<ITvMazeApiService, TvMazeApiService>()
+				.AddTransient<IShowsApiService, ShowsApiService>();
+
+			services.AddHostedService<ShowsScraperHostedService>();
 
 			return services;
 		}

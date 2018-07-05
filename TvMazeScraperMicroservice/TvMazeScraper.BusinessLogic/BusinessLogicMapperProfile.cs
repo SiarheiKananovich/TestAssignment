@@ -12,6 +12,10 @@ namespace TvMazeScraper.BusinessLogic
 			CreateMap<TvMazeShowData, TvMazeShowModel>();
 			CreateMap<TvMazeCastModel, CastData>();
 			CreateMap<TvMazeShowModel, ShowData>();
+			CreateMap<CastModel, CastData>();
+			CreateMap<ShowModel, ShowData>();
+			CreateMap<TvMazeCastModel, CastModel>();
+			CreateMap<TvMazeShowModel, ShowModel>();
 		}
 	}
 }

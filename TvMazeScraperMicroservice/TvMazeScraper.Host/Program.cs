@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.IO;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -17,6 +18,7 @@ namespace TvMazeScraper.Host
 				.ConfigureAppConfiguration((hostingContext, config) =>
 				{
 					config
+						.SetBasePath(Directory.GetCurrentDirectory())
 						.AddJsonFile("appsettings.json")
 						.AddEnvironmentVariables();
 
@@ -32,8 +34,6 @@ namespace TvMazeScraper.Host
 						.AddOptions()
 						.ConfigureDatabaseServices(hostContext.Configuration)
 						.ConfigureBusinessLogicServices(hostContext.Configuration);
-
-					//services.AddHostedService<ShowsScraperHostedService>();
 				})
 				.ConfigureLogging((hostingContext, logging) => {
 					logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));

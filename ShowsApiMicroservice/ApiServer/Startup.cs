@@ -23,10 +23,9 @@ namespace ApiServer
 		{
 			services
 				.AddAutoMapper()
+				.ConfigureBusinessLogicServices()
 				.ConfigureDatabaseServices(Configuration)
 				.ConfigureBusinessLogicServices();
-
-			//services.AddHostedService<TvMazeScraper>();
 
 			services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 		}

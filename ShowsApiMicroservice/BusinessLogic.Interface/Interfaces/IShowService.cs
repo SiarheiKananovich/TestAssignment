@@ -2,10 +2,11 @@
 using System.Threading.Tasks;
 using BusinessLogic.Interface.Models;
 
-namespace BusinessLogic.Interfaces
+namespace BusinessLogic.Interface.Interfaces
 {
 	public interface IShowsService
 	{
 		Task<IEnumerable<ShowModel>> GetShowsAsync(int skip, int take);
+		Task<bool> AddShowAsync(ShowModel show);
 	}
 }

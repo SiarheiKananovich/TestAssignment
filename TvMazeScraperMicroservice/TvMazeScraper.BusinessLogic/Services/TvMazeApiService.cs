@@ -52,6 +52,32 @@ namespace TvMazeScraper.BusinessLogic.Services
 			return tvMazeShowsIds;
 		}
 
+		public async Task<TvMazeShowModel> GetTvMazeShowAsync(int id)
+		{
+			var requestUrl = _apiConfig.Value.ShowInfoApiUrl;
+			requestUrl = String.Format(requestUrl, id);
+			TvMazeShowData tvMazeShow = null;
+
+			try
+			{
+				var client = new HttpClient();
+				var response = await client.GetStringAsync(requestUrl);
+				tvMazeShow = JsonConvert.DeserializeObject<TvMazeShowData>(response);
+			}
+			catch (HttpRequestException exception)
+			{
+				//todo
+				throw;
+			}
+			catch (JsonReaderException exception)
+			{
+				//todo
+				throw;
+			}
+
+			return _mapper.Map<TvMazeShowModel>(tvMazeShow);
+		}
+
 		public async Task<IEnumerable<TvMazeCastModel>> GetTvMazeCastsAsync(int id)
 		{
 			var requestUrl = _apiConfig.Value.ShowCastsApiUrl;

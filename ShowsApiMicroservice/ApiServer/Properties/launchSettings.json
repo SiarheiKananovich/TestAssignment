@@ -20,7 +20,7 @@
     "Server": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "api/values",
+      "launchUrl": "api/v1/shows?skip=0&take=1",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

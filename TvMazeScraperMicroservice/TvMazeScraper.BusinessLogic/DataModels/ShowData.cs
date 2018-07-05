@@ -9,7 +9,7 @@ namespace TvMazeScraper.BusinessLogic.DataModels
 		[JsonProperty(PropertyName = "name")]
 		public string Name { get; set; }
 
-		[JsonProperty(PropertyName = "casts")]
+		[JsonProperty(PropertyName = "cast")]
 		public IEnumerable<CastData> Casts { get; set; }
 	}
 }

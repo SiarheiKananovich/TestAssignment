@@ -8,7 +8,10 @@ namespace ApiServer
 	{
 		public ApiServerMapperProfile()
 		{
+			CreateMap<CastModel, ApiCast>();
 			CreateMap<ShowModel, ApiShow>();
+			CreateMap<ApiCast, CastModel>();
+			CreateMap<ApiShow, ShowModel>();
 		}
     }
 }

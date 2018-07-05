@@ -2,7 +2,7 @@
 {
 	public class TvMazeApiConfig
 	{
-		public string BaseUrl { get; set; }
+		public string BaseApiUrl { get; set; }
 
 		public string ShowsSearchApiUrl { get; set; }
 

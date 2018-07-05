@@ -7,11 +7,24 @@ services:
       context: .
       dockerfile: ShowsApiMicroservice/ApiServer/Dockerfile
     depends_on:
-      - db
-  db:
-      image: "microsoft/mssql-server-linux"
-      ports:
-        - "1433:1433"
-      environment:
-          SA_PASSWORD: "TestPassword123"
-          ACCEPT_EULA: "Y"
+      - showsdb
+  showsdb:
+    image: microsoft/mssql-server-linux
+    ports:
+      - "1433:1433"
+    environment:
+      SA_PASSWORD: TestPassword123
+      ACCEPT_EULA: Y
+      mongo:
+  tvmazescraper.host:
+    image: ${DOCKER_REGISTRY}tvmazescraperhost
+    build:
+      context: .
+      dockerfile: TvMazeScraperMicroservice/TvMazeScraper.Host/Dockerfile
+    depends_on:
+      - tvmazedb
+      - server
+  tvmazedb:
+    image: mongo
+    restart: always
+

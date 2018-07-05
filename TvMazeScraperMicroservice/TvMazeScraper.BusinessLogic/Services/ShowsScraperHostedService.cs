@@ -4,48 +4,41 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
+using TvMazeScraper.BusinessLogic.Interface.Configs;
 using TvMazeScraper.BusinessLogic.Interface.Interfaces;
 
 namespace TvMazeScraper.BusinessLogic.Services
 {
 	public class ShowsScraperHostedService : IHostedService, IDisposable
 	{
-		private readonly IConfiguration _configuration;
+		private readonly IOptions<AppConfig> _appConfig;
 		private readonly ILogger<ShowsScraperHostedService> _logger;
-		private readonly ITvMazeScraperService _tvMazeShowsApiService;
+		private readonly ITvMazeScraperService _tvMazeScraperService;
 
 		private Timer _timer;
 
 
-		public ShowsScraperHostedService(IConfiguration configuration, ILoggerFactory loggerFactory, ITvMazeScraperService tvMazeShowsApiService)
+		public ShowsScraperHostedService(IOptions<AppConfig> appConfig, ILogger<ShowsScraperHostedService> logger, ITvMazeScraperService tvMazeScraperService)
 		{
-			_configuration = configuration;
-			_logger = loggerFactory.CreateLogger<ShowsScraperHostedService>();
-			_tvMazeShowsApiService = tvMazeShowsApiService;
+			_appConfig = appConfig;
+			_logger = logger;
+			_tvMazeScraperService = tvMazeScraperService;
 		}
 
 
 		public Task StartAsync(CancellationToken cancellationToken)
 		{
-			var period = 5;//double.Parse(_configuration[Defines.Config.TVMAZE_SCRAPPER_UPDATE_PERIOD]);
+			var period = TimeSpan.FromMinutes(_appConfig.Value.ScraperUpdatePeriodInMinutes);
 
-			_timer = new Timer(ImportTvMazeShows, null, TimeSpan.Zero,
-				TimeSpan.FromMinutes(period));
+			_timer = new Timer(ImportTvMazeShows, null, TimeSpan.Zero, period);
 
 			return Task.CompletedTask;
 		}
 
 		private async void ImportTvMazeShows(object state)
 		{
-			var tvMazeShows = await _tvMazeShowsApiService.GetTvMazeShowsAsync();
-
-			foreach (var show in tvMazeShows)
-			{
-				if (!await _tvMazeShowsApiService.IsTvMazeShowImportedAsync(show.Id))
-				{
-					await _tvMazeShowsApiService.ImportTvMazeShowAsync(show);
-				}
-			}
+			await _tvMazeScraperService.ImportNewTvMazeShowsAsync();
 		}
 
 		public Task StopAsync(CancellationToken cancellationToken)

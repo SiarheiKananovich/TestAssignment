@@ -1,4 +1,4 @@
-﻿using BusinessLogic.Interfaces;
+﻿using BusinessLogic.Interface.Interfaces;
 using BusinessLogic.Services;
 using Microsoft.Extensions.DependencyInjection;
 

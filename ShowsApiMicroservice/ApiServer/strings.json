@@ -1,0 +1,9 @@
+﻿{
+	"Strings": {
+		"API_INVALID_SHOW_MODEL_ERROR": "Invalid Show model",
+		"ERROR_SAMPLE": "Error sample message.",
+		"WARNING_SAMPLE": "Warning sample message.",
+		"ARGUMENT_ERROR_SKIP_TAKE": "Invalid 'skip' and 'take' values.",
+		"DATABASE_ERROR_SAMPLE":  "Database error." 
+	}
+}
