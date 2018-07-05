@@ -16,6 +16,7 @@ namespace TvMazeScraper.BusinessLogic
 				.Configure<ShowsApiConfig>(configuration.GetSection("ShowsApi"));
 
 			services
+				.AddSingleton<IHttpService, HttpService>()
 				.AddTransient<ITvMazeScraperService, TvMazeScraperService>()
 				.AddTransient<ITvMazeApiService, TvMazeApiService>()
 				.AddTransient<IShowsApiService, ShowsApiService>();

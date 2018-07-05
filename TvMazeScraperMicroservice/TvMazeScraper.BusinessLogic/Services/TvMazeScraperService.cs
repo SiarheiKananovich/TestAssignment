@@ -6,6 +6,8 @@ using TvMazeScraper.BusinessLogic.Interface.Interfaces;
 using TvMazeScraper.BusinessLogic.Interface.Models;
 using TvMazeScraper.Database.Interface.Interfaces;
 using TvMazeScraper.Database.Interface.Models;
+using TvMazeScraper.Infrastructure.Interface;
+using TvMazeScraper.Infrastructure.Interface.Interfaces;
 
 namespace TvMazeScraper.BusinessLogic.Services
 {
@@ -16,6 +18,7 @@ namespace TvMazeScraper.BusinessLogic.Services
 		private readonly ITvMazeApiService _tvMazeApiService;
 		private readonly IImportInfoRepository _importInfoRepository;
 		private readonly IShowsApiService _showsApiService;
+		private readonly IStringsProvider _strings;
 
 
 		public TvMazeScraperService(
@@ -23,13 +26,15 @@ namespace TvMazeScraper.BusinessLogic.Services
 			IMapper mapper, 
 			ITvMazeApiService tvMazeApiService,
 			IImportInfoRepository importInfoRepository,
-			IShowsApiService showsApiService)
+			IShowsApiService showsApiService,
+			IStringsProvider strings)
 		{
 			_logger = logger;
 			_mapper = mapper;
 			_tvMazeApiService = tvMazeApiService;
 			_importInfoRepository = importInfoRepository;
 			_showsApiService = showsApiService;
+			_strings = strings;
 		}
 
 		public async Task ImportNewTvMazeShowsAsync()
@@ -48,7 +53,7 @@ namespace TvMazeScraper.BusinessLogic.Services
 			}
 			catch (Exception exception)
 			{
-				_logger.LogError(exception, "Import failed");
+				_logger.LogError(exception, _strings[StringsEnum.ERROR_SAMPLE]);
 			}
 		}
 
@@ -63,28 +68,28 @@ namespace TvMazeScraper.BusinessLogic.Services
 
 			if (tvMazeShow?.Casts == null)
 			{
-				//todo
+				_logger.LogWarning(_strings[StringsEnum.INVALID_TVMAZE_DATA_RECEIVED]);
 				return;
 			}
 
 			var show = _mapper.Map<ShowModel>(tvMazeShow);
 
-			try
+			if (IsShowModelValidForImport(show) && await _showsApiService.TryImportShowAsync(show))
 			{
-				if (IsShowModelValidForImport(show) && await _showsApiService.TryImportShowAsync(show))
+				var importInfo = new ImportInfo
 				{
-					var importInfo = new ImportInfo
-					{
-						ImportedTvMazeShowId = tvMazeShowId
-					};
+					ImportedTvMazeShowId = tvMazeShowId
+				};
 
+				try
+				{
 					await _importInfoRepository.AddImportInfoAsync(importInfo);
 				}
-			}
-			catch (Exception)
-			{
-				//todo
-				throw;
+				catch (Exception exception)
+				{
+					_logger.LogCritical(exception, _strings[StringsEnum.ERROR_FAILED_ADD_IMPORT_INFO]);
+					throw;
+				}
 			}
 		}
 

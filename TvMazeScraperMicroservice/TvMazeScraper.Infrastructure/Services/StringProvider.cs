@@ -1,9 +1,9 @@
-﻿using System;
-using Infrastructure.Interface;
-using Infrastructure.Interface.Interfaces;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
+using System;
+using TvMazeScraper.Infrastructure.Interface;
+using TvMazeScraper.Infrastructure.Interface.Interfaces;
 
-namespace Infrastructure.Services
+namespace TvMazeScraper.Infrastructure.Services
 {
 	public class StringsProvider : IStringsProvider
 	{

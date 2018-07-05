@@ -7,11 +7,16 @@ using System.Threading.Tasks;
 using AutoMapper;
 using TvMazeScraper.BusinessLogic;
 using TvMazeScraper.Database;
+using TvMazeScraper.Infrastructure;
 
 namespace TvMazeScraper.Host
 {
 	public class Program
 	{
+		private const string APP_SETTINGS_FILE_NAME = "appsettings.json";
+		private const string STRINGS_FILE_NAME = "strings.json";
+		private const string CONFIG_LOGGING_SECTION_NAME = "Logging";
+
 		public static async Task Main(string[] args)
 		{
 			var builder = new HostBuilder()
@@ -19,7 +24,8 @@ namespace TvMazeScraper.Host
 				{
 					config
 						.SetBasePath(Directory.GetCurrentDirectory())
-						.AddJsonFile("appsettings.json")
+						.AddJsonFile(APP_SETTINGS_FILE_NAME)
+						.AddJsonFile(STRINGS_FILE_NAME)
 						.AddEnvironmentVariables();
 
 					if (args != null)
@@ -32,11 +38,12 @@ namespace TvMazeScraper.Host
 					services
 						.AddAutoMapper()
 						.AddOptions()
+						.ConfigureInfrastructureServices()
 						.ConfigureDatabaseServices(hostContext.Configuration)
 						.ConfigureBusinessLogicServices(hostContext.Configuration);
 				})
 				.ConfigureLogging((hostingContext, logging) => {
-					logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
+					logging.AddConfiguration(hostingContext.Configuration.GetSection(CONFIG_LOGGING_SECTION_NAME));
 					logging.AddConsole();
 				});
 

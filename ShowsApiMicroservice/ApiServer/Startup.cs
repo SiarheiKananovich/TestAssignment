@@ -2,6 +2,7 @@
 using AutoMapper;
 using BusinessLogic;
 using Database;
+using Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -12,18 +13,22 @@ namespace ApiServer
 {
 	public class Startup
 	{
+		private const string ERROR_PAGES_TEMPLATE = "/errors/{0}.html";
+
+		public IConfiguration Configuration { get; }
+
+
 		public Startup(IConfiguration configuration)
 		{
 			Configuration = configuration;
 		}
 
-		public IConfiguration Configuration { get; }
 
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services
 				.AddAutoMapper()
-				.ConfigureBusinessLogicServices()
+				.ConfigureInfrastructureServices()
 				.ConfigureDatabaseServices(Configuration)
 				.ConfigureBusinessLogicServices();
 
@@ -43,7 +48,7 @@ namespace ApiServer
 				//app.UseHsts();
 			}
 
-			app.UseStatusCodePagesWithReExecute("/errors/{0}.html");
+			app.UseStatusCodePagesWithReExecute(ERROR_PAGES_TEMPLATE);
 			// Uncomment if HTTPS required
 			//app.UseHttpsRedirection();
 			app.UseDefaultFiles();

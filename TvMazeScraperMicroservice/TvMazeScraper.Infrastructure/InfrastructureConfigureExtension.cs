@@ -1,8 +1,8 @@
-﻿using Infrastructure.Interface.Interfaces;
-using Infrastructure.Services;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
+using TvMazeScraper.Infrastructure.Interface.Interfaces;
+using TvMazeScraper.Infrastructure.Services;
 
-namespace Infrastructure
+namespace TvMazeScraper.Infrastructure
 {
 	public static class InfrastructureConfigureExtension
 	{

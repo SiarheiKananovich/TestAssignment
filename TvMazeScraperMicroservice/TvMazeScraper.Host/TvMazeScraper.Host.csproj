@@ -10,6 +10,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="strings.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="strings.json">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="4.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="2.1.1" />
@@ -25,6 +35,7 @@
     <ProjectReference Include="..\TvMazeScraper.BusinessLogic.Interface\TvMazeScraper.BusinessLogic.Interface.csproj" />
     <ProjectReference Include="..\TvMazeScraper.BusinessLogic\TvMazeScraper.BusinessLogic.csproj" />
     <ProjectReference Include="..\TvMazeScraper.Database\TvMazeScraper.Database.csproj" />
+    <ProjectReference Include="..\TvMazeScraper.Infrastructure\TvMazeScraper.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,0 +1,12 @@
+﻿{
+	"Strings": {
+		"ERROR_SAMPLE": "Error sample message.",
+		"WARNING_SAMPLE": "Warning sample message.",
+		"SCRAPER_HOSTED_SERVICE_STARTING": "Scraper starting...",
+		"SCRAPER_HOSTED_SERVICE_STARTED": "Scraper started.",
+		"SCRAPER_HOSTED_SERVICE_STOPED": "Scraper stoped.",
+		"SCRAPER_HOSTED_SERVICE_IMPORT_STARTED": "Scraper import started.",
+		"INVALID_TVMAZE_DATA_RECEIVED": "Invalid TvMAze data received.",
+		"ERROR_FAILED_ADD_IMPORT_INFO":  "Failed to insert net ImportInfo." 
+	}
+}

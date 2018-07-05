@@ -1,26 +1,41 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using TvMazeScraper.BusinessLogic.DataModels;
 using TvMazeScraper.BusinessLogic.Interface.Configs;
 using TvMazeScraper.BusinessLogic.Interface.Interfaces;
 using TvMazeScraper.BusinessLogic.Interface.Models;
+using TvMazeScraper.Infrastructure.Interface;
+using TvMazeScraper.Infrastructure.Interface.Interfaces;
 
 namespace TvMazeScraper.BusinessLogic.Services
 {
 	public class ShowsApiService : IShowsApiService
 	{
+		private readonly ILogger<ShowsApiService> _logger;
 		private readonly IOptions<ShowsApiConfig> _apiConfig;
 		private readonly IMapper _mapper;
+		private readonly IHttpService _httpService;
+		private readonly IStringsProvider _strings;
 
 
-		public ShowsApiService(IOptions<ShowsApiConfig> apiConfig, IMapper mapper)
+		public ShowsApiService(
+			ILogger<ShowsApiService> logger,
+			IOptions<ShowsApiConfig> apiConfig, 
+			IMapper mapper, 
+			IHttpService httpService,
+			IStringsProvider strings)
 		{
+			_logger = logger;
 			_apiConfig = apiConfig;
 			_mapper = mapper;
+			_httpService = httpService;
+			_strings = strings;
 		}
 
 
@@ -32,20 +47,12 @@ namespace TvMazeScraper.BusinessLogic.Services
 			try
 			{
 				var showsData = _mapper.Map<ShowData>(show);
-
-				var client = new HttpClient();
-				HttpContent content = new StringContent(JsonConvert.SerializeObject(showsData), Encoding.UTF8, "application/json");
-				var response = await client.PutAsync(requestUrl, content);
-				result = JsonConvert.DeserializeObject<bool>(await response.Content.ReadAsStringAsync());
+				
+				result = await _httpService.PutAsync<bool>(requestUrl, showsData);
 			}
-			catch (HttpRequestException)
+			catch (HttpRequestException exception)
 			{
-				//todo
-				return false;
-			}
-			catch (JsonReaderException)
-			{
-				//todo
+				_logger.LogError(exception, _strings[StringsEnum.ERROR_SAMPLE]);
 				return false;
 			}
 
