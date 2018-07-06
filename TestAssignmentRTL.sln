@@ -15,7 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ShowsApiMicroservice", "Sho
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BusinessLogic.Interface", "ShowsApiMicroservice\BusinessLogic.Interface\BusinessLogic.Interface.csproj", "{D7C1C315-3B70-42DF-8BE0-AA6A51662370}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Database.Interface", "..\Database.Interface\Database.Interface.csproj", "{C389312E-C37A-43C4-8E1E-F98FB204A6F5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Database.Interface", "ShowsApiMicroservice\Database.Interface\Database.Interface.csproj", "{C389312E-C37A-43C4-8E1E-F98FB204A6F5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TvMazeScraperMicroservice", "TvMazeScraperMicroservice", "{BE322574-E093-40F2-BF20-4C023E8EA079}"
 EndProject
