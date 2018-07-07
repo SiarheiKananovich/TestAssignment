@@ -8,16 +8,17 @@ namespace TvMazeScraper.BusinessLogic
 {
 	public static class BusinessLogicConfigureExtension
 	{
-		public static IServiceCollection ConfigureBusinessLogicServices(this IServiceCollection services, IConfiguration configuration)
+		public static IServiceCollection ConfigureBusinessLogicServices(this IServiceCollection services, IConfiguration config)
 		{
 			services
-				.Configure<AppConfig>(configuration.GetSection("App"))
-				.Configure<TvMazeApiConfig>(configuration.GetSection("TvMazeApi"))
-				.Configure<ShowsApiConfig>(configuration.GetSection("ShowsApi"));
+				.Configure<AppConfig>(config.GetSection("App"))
+				.Configure<TvMazeApiConfig>(config.GetSection("TvMazeApi"))
+				.Configure<ShowsApiConfig>(config.GetSection("ShowsApi"))
+				.Configure<CommunicationConfig>(config.GetSection("Communication"));
 
 			services
 				.AddSingleton<IHttpService, HttpService>()
-				.AddTransient<ITvMazeScraperService, TvMazeScraperService>()
+				.AddSingleton<ITvMazeScraperService, TvMazeScraperService>()
 				.AddTransient<ITvMazeApiService, TvMazeApiService>()
 				.AddTransient<IShowsApiService, ShowsApiService>();
 

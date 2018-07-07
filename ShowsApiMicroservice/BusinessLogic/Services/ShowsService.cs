@@ -64,6 +64,23 @@ namespace BusinessLogic.Services
 			return _mapper.Map<IEnumerable<ShowModel>>(shows);
 		}
 
+		public async Task<bool> AddShowsAsync(IEnumerable<ShowModel> showModels)
+		{
+			try
+			{
+				var shows = _mapper.Map<IEnumerable<Show>>(showModels);
+
+				await _showRepository.AddShowsAsync(shows);
+			}
+			catch (DatabaseException exception)
+			{
+				_logger.LogError(exception, _strings[StringsEnum.DATABASE_ERROR_SAMPLE]);
+				return false;
+			}
+
+			return true;
+		}
+
 		public async Task<bool> AddShowAsync(ShowModel showModel)
 		{
 			try

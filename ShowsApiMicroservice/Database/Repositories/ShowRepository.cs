@@ -15,11 +15,13 @@ namespace Database.Repositories
 		private readonly DatabaseContext _database;
 		private readonly IStringsProvider _strings;
 
+
 		public ShowRepository(DatabaseContext database, IStringsProvider strings)
 		{
 			_database = database;
 			_strings = strings;
 		}
+
 
 		public async Task<IEnumerable<Show>> GetShowsAsync(int skip, int take)
 		{
@@ -33,6 +35,38 @@ namespace Database.Repositories
 				.ToListAsync();
 
 			return shows;
+		}
+
+		public async Task AddShowsAsync(IEnumerable<Show> shows)
+		{
+			using (var transaction = await _database.Database.BeginTransactionAsync())
+			{
+				try
+				{
+					foreach (var show in shows)
+					{
+						// prevent custom id generation
+						show.Id = 0;
+						if (show.Casts != null)
+						{
+							foreach (var cast in show.Casts)
+							{
+								cast.Id = 0;
+							}
+						}
+
+						_database.Shows.Add(show);
+					}
+
+					await _database.SaveChangesAsync();
+					transaction.Commit();
+				}
+				catch (DbUpdateException exception)
+				{
+					transaction.Rollback();
+					throw new DatabaseException(_strings[StringsEnum.DATABASE_ERROR_SAMPLE], exception);
+				}
+			}
 		}
 
 		public async Task AddShowAsync(Show show)

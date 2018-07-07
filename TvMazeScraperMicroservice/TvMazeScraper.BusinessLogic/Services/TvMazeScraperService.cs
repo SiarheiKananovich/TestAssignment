@@ -37,6 +37,7 @@ namespace TvMazeScraper.BusinessLogic.Services
 			_strings = strings;
 		}
 
+
 		public async Task ImportNewTvMazeShowsAsync()
 		{
 			try
@@ -56,6 +57,7 @@ namespace TvMazeScraper.BusinessLogic.Services
 				_logger.LogError(exception, _strings[StringsEnum.ERROR_SAMPLE]);
 			}
 		}
+
 
 		private async Task ImportTvMazeShowAsync(int tvMazeShowId)
 		{
@@ -98,7 +100,7 @@ namespace TvMazeScraper.BusinessLogic.Services
 			return _importInfoRepository.IsImportInfoExistForTvMazeShowAsync(tvMazeShowId);
 		}
 
-		private bool IsShowModelValidForImport(ShowModel show)
+		private static bool IsShowModelValidForImport(ShowModel show)
 		{
 			return String.IsNullOrWhiteSpace(show.Name) == false;
 		}
