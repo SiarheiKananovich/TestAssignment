@@ -12,26 +12,26 @@ namespace ApiServer
 
 
 		public static void Main(string[] args)
-        {
-            CreateWebHostBuilder(args).Build().Run();
-        }
+		{
+			CreateWebHostBuilder(args).Build().Run();
+		}
 
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-	            .ConfigureAppConfiguration((hostingContext, config) =>
-	            {
-		            config
-			            .SetBasePath(Directory.GetCurrentDirectory())
-			            .AddJsonFile(APP_SETTINGS_FILE_NAME)
-			            .AddJsonFile(STRINGS_FILE_NAME)
+		public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
+			WebHost.CreateDefaultBuilder(args)
+				.ConfigureAppConfiguration((hostingContext, config) =>
+				{
+					config
+						.SetBasePath(Directory.GetCurrentDirectory())
+						.AddJsonFile(APP_SETTINGS_FILE_NAME)
+						.AddJsonFile(STRINGS_FILE_NAME)
 						.AddEnvironmentVariables();
 
-		            if (args != null)
-		            {
-			            config.AddCommandLine(args);
-		            }
-	            })
+					if (args != null)
+					{
+						config.AddCommandLine(args);
+					}
+				})
 				.UseStartup<Startup>();
     }
 }

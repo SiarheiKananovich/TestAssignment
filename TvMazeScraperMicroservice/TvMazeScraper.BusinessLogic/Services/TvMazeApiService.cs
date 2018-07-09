@@ -29,14 +29,16 @@ namespace TvMazeScraper.BusinessLogic.Services
 		}
 
 
-		public async Task<IEnumerable<int>> GetTvMazeShowsIdsAsync()
+		public async Task<IEnumerable<int>> GetTvMazeShowsIdsAsync(int skip, int take)
 		{
+			// todo: pagination to request only IMPORTED_SHOWS_BATCH_SIZE count at once
 			var requestUrl = _apiConfig.Value.ShowsSearchApiUrl;
-
 			var tvMazeSearchData = await _httpService.GetAsync<IEnumerable<TvMazeSearchIdOnlyData>>(requestUrl);
-			var tvMazeShowsIds = tvMazeSearchData.Select(data => data.Show.Id);
 
-			return tvMazeShowsIds;
+			return tvMazeSearchData
+				.Skip(skip)
+				.Take(take)
+				.Select(data => data.Show.Id);
 		}
 
 		public async Task<TvMazeShowModel> GetTvMazeShowAsync(int id)

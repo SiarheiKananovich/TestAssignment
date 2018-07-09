@@ -25,7 +25,7 @@ namespace TvMazeScraper.Database.Repositories
 			return await result.AnyAsync();
 		}
 
-		public Task AddImportInfoAsync(ImportInfo importInfo)
+		public Task AddAsync(ImportInfo importInfo)
 		{
 			return _database.ImportInfoCollection
 				.InsertOneAsync(importInfo);

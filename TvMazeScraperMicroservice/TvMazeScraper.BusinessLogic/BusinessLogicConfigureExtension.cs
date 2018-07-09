@@ -8,19 +8,25 @@ namespace TvMazeScraper.BusinessLogic
 {
 	public static class BusinessLogicConfigureExtension
 	{
+		private const string AppConfigSection = "App";
+		private const string TvMazeApiConfigSection = "TvMazeApi";
+		private const string ShowsApiConfigSection = "ShowsApi";
+		private const string CommunicationConfigSection = "Communication";
+
+
 		public static IServiceCollection ConfigureBusinessLogicServices(this IServiceCollection services, IConfiguration config)
 		{
 			services
-				.Configure<AppConfig>(config.GetSection("App"))
-				.Configure<TvMazeApiConfig>(config.GetSection("TvMazeApi"))
-				.Configure<ShowsApiConfig>(config.GetSection("ShowsApi"))
-				.Configure<CommunicationConfig>(config.GetSection("Communication"));
+				.Configure<AppConfig>(config.GetSection(AppConfigSection))
+				.Configure<TvMazeApiConfig>(config.GetSection(TvMazeApiConfigSection))
+				.Configure<ShowsApiConfig>(config.GetSection(ShowsApiConfigSection))
+				.Configure<CommunicationConfig>(config.GetSection(CommunicationConfigSection));
 
 			services
 				.AddSingleton<IHttpService, HttpService>()
 				.AddSingleton<ITvMazeScraperService, TvMazeScraperService>()
 				.AddTransient<ITvMazeApiService, TvMazeApiService>()
-				.AddTransient<IShowsApiService, ShowsApiService>();
+				.AddTransient<IMicroservicesCommunicationService, MicroservicesCommunicationService>();
 
 			services.AddHostedService<ShowsScraperHostedService>();
 

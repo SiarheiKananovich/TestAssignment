@@ -48,26 +48,5 @@ namespace ApiServer.Controllers
 
 			return new JsonResult(apiShows);
 		}
-
-		// TODO: Add authorization or separate to ShowsImportMicroservice if public access is not needed, or use RabbitMQ RPC
-		// PUT api/v1/shows
-		[HttpPut]
-		public async Task<ActionResult> Put([FromBody][Required]ApiShow apiShow)
-		{
-			ShowModel show;
-			try
-			{
-				show = _mapper.Map<ShowModel>(apiShow);
-			}
-			catch (AutoMapperMappingException exception)
-			{
-				_logger.LogWarning(exception, _strings[StringsEnum.WARNING_SAMPLE]);
-				return StatusCode((int)HttpStatusCode.BadRequest, _strings[StringsEnum.API_INVALID_SHOW_MODEL_ERROR]);
-			}
-
-			var result = await _showService.AddShowAsync(show);
-
-			return new JsonResult(result);
-		}
 	}
 }

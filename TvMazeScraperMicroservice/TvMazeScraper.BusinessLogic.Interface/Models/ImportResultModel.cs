@@ -8,11 +8,6 @@ namespace TvMazeScraper.BusinessLogic.Interface.Models
 
 		public bool Success { get; set; }
 
-
-		public ImportResultModel(Guid requestId, bool success)
-		{
-			RequestId = requestId;
-			Success = success;
-		}
+		public int ShowId { get; set; }
 	}
 }

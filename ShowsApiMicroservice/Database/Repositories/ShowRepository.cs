@@ -37,7 +37,7 @@ namespace Database.Repositories
 			return shows;
 		}
 
-		public async Task AddShowsAsync(IEnumerable<Show> shows)
+		public async Task<IEnumerable<int>> AddShowsAsync(IEnumerable<Show> shows)
 		{
 			using (var transaction = await _database.Database.BeginTransactionAsync())
 			{
@@ -46,12 +46,12 @@ namespace Database.Repositories
 					foreach (var show in shows)
 					{
 						// prevent custom id generation
-						show.Id = 0;
+						show.Id = default(int);
 						if (show.Casts != null)
 						{
 							foreach (var cast in show.Casts)
 							{
-								cast.Id = 0;
+								cast.Id = default(int);
 							}
 						}
 
@@ -67,17 +67,19 @@ namespace Database.Repositories
 					throw new DatabaseException(_strings[StringsEnum.DATABASE_ERROR_SAMPLE], exception);
 				}
 			}
+
+			return shows.Select(show => show.Id);
 		}
 
-		public async Task AddShowAsync(Show show)
+		public async Task<int> AddShowAsync(Show show)
 		{
 			// prevent custom id generation
-			show.Id = 0;
+			show.Id = default(int);
 			if (show.Casts != null)
 			{
 				foreach (var cast in show.Casts)
 				{
-					cast.Id = 0;
+					cast.Id = default(int);
 				}
 			}
 
@@ -90,6 +92,8 @@ namespace Database.Repositories
 			{
 				throw new DatabaseException(_strings[StringsEnum.DATABASE_ERROR_SAMPLE], exception);
 			}
+
+			return show.Id;
 		}
 	}
 }

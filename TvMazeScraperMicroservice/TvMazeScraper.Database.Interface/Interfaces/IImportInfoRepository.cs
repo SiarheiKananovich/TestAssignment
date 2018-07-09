@@ -7,6 +7,6 @@ namespace TvMazeScraper.Database.Interface.Interfaces
 	{
 		Task<bool> IsImportInfoExistForTvMazeShowAsync(int tvMazeShowId);
 
-		Task AddImportInfoAsync(ImportInfo importInfo);
+		Task AddAsync(ImportInfo importInfo);
 	}
 }

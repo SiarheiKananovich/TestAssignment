@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using TvMazeScraper.BusinessLogic.DataModels;
 using TvMazeScraper.BusinessLogic.Interface.Models;
+using TvMazeScraper.Database.Interface.Models;
 
 namespace TvMazeScraper.BusinessLogic
 {
@@ -16,6 +17,7 @@ namespace TvMazeScraper.BusinessLogic
 			CreateMap<ShowModel, ShowData>();
 			CreateMap<TvMazeCastModel, CastModel>();
 			CreateMap<TvMazeShowModel, ShowModel>();
+			CreateMap<ImportRequestModel, ImportRequest>();
 		}
 	}
 }

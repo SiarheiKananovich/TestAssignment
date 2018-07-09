@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Text;
+using System.Threading.Tasks;
 using BusinessLogic.Interface.Configs;
 using BusinessLogic.Interface.Interfaces;
 using BusinessLogic.Interface.Models;
@@ -15,27 +16,33 @@ namespace BusinessLogic.Services
 	public class MicroservicesCommunicationService : IMicroservicesCommunicationService
 	{
 		private readonly CommunicationConfig _config;
-		private readonly IShowsImportService _showsImportService;
 
 		private IModel _showsImportChannel;
 
 
-		public MicroservicesCommunicationService(
-			IOptions<CommunicationConfig> config,
-			IShowsImportService showsImportService)
+		public MicroservicesCommunicationService(IOptions<CommunicationConfig> config)
 		{
 			_config = config.Value;
-			_showsImportService = showsImportService;
 
 			OpenChannels();
-			RegisterConsumers();
 		}
 
 
-		public void SendImportResults(IEnumerable<ImportResultModel> importResults)
+		public void EnqueueImportResults(IEnumerable<ImportResultModel> importResults)
 		{
 			var data = SerializeData(importResults);
-			_showsImportChannel.BasicPublish("TestExchangeName", "RoutingKeyName", null, data);
+			_showsImportChannel.BasicPublish(_config.ImportResultsExchange, String.Empty, null, data);
+		}
+
+		public void RegisterImportRequestsConsumers(Func<IEnumerable<ImportRequestModel>, Task> handler)
+		{
+			var showsImportConsumer = new EventingBasicConsumer(_showsImportChannel);
+			showsImportConsumer.Received += (sender, eventArgs) =>
+			{
+				var importRequests = DeserializeData<IEnumerable<ImportRequestModel>>(eventArgs.Body, true);
+				handler(importRequests);
+			};
+			_showsImportChannel.BasicConsume(queue: _config.ImportRequestsQueue, autoAck: true, consumer: showsImportConsumer);
 		}
 
 
@@ -44,21 +51,13 @@ namespace BusinessLogic.Services
 			var showsApiConnection = GetConnection(_config.UserName, _config.Password, _config.VirtualHost, _config.HostName);
 
 			_showsImportChannel = showsApiConnection.CreateModel();
-			_showsImportChannel.ExchangeDeclare("TestApiServerExchangeName", ExchangeType.Direct);
-			_showsImportChannel.QueueDeclare("TestQueueName", false, false, false, null);
-			_showsImportChannel.QueueBind("TestQueueName", "TestExchangeName", "RoutingKeyName", null);
-		}
+			_showsImportChannel.QueueDeclare(_config.ImportRequestsQueue, false, false, false, null);
+			_showsImportChannel.ExchangeDeclare(_config.ImportRequestsExchange, ExchangeType.Direct);
+			_showsImportChannel.QueueBind(_config.ImportRequestsQueue, _config.ImportRequestsExchange, String.Empty);
 
-		private void RegisterConsumers()
-		{
-			var showsImportConsumer = new AsyncEventingBasicConsumer(_showsImportChannel);
-			showsImportConsumer.Received += async (_, args) =>
-			{
-				var importRequests = DeserializeData<IEnumerable<ImportRequestModel>>(args.Body);
-				await _showsImportService.ImportAsync(importRequests);
-			};
-
-			_showsImportChannel.BasicConsume(queue: "TestQueueName", autoAck: true, consumer: showsImportConsumer);
+			_showsImportChannel.QueueDeclare(_config.ImportResultsQueue, false, false, false, null);
+			_showsImportChannel.ExchangeDeclare(_config.ImportResultsExchange, ExchangeType.Direct);
+			_showsImportChannel.QueueBind(_config.ImportResultsQueue, _config.ImportResultsExchange, String.Empty);
 		}
 
 		private static IConnection GetConnection(string userName, string password, string virtualHost, string hostName)
@@ -86,11 +85,13 @@ namespace BusinessLogic.Services
 			}
 		}
 
-		private static T DeserializeData<T>(byte[] data)
+		private static T DeserializeData<T>(byte[] data, bool isArray = false)
 		{
 			using (var ms = new MemoryStream(data))
 			using (var reader = new BsonDataReader(ms))
 			{
+				reader.ReadRootValueAsArray = isArray;
+
 				var serializer = new JsonSerializer();
 				return serializer.Deserialize<T>(reader);
 			}

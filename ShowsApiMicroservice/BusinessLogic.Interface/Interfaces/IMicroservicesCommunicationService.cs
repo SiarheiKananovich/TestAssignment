@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using BusinessLogic.Interface.Models;
 
 namespace BusinessLogic.Interface.Interfaces
 {
 	public interface IMicroservicesCommunicationService
 	{
-		void SendImportResults(IEnumerable<ImportResultModel> importResults);
+		void RegisterImportRequestsConsumers(Func<IEnumerable<ImportRequestModel>, Task> handler);
+		void EnqueueImportResults(IEnumerable<ImportResultModel> importResults);
 	}
 }

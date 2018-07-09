@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Text;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Bson;
@@ -12,28 +13,37 @@ using TvMazeScraper.BusinessLogic.Interface.Models;
 
 namespace TvMazeScraper.BusinessLogic.Services
 {
-	public class MicroservicesCommunicationService
+	public class MicroservicesCommunicationService : IMicroservicesCommunicationService
 	{
 		private readonly CommunicationConfig _config;
-		private readonly ITvMazeScraperService _tvMazeScraperService;
 
 		private IModel _showsImportChannel;
 
 
-		public MicroservicesCommunicationService(IOptions<CommunicationConfig> config, ITvMazeScraperService tvMazeScraperService)
+		public MicroservicesCommunicationService(IOptions<CommunicationConfig> config)
 		{
 			_config = config.Value;
-			_tvMazeScraperService = tvMazeScraperService;
 
 			OpenChannels();
-			RegisterConsumers();
 		}
 
 
-		public void SendShowsImportRequest(IEnumerable<ImportRequestModel> importRequests)
+		public void EnqueueShowsImportRequest(IEnumerable<ImportRequestModel> importRequests)
 		{
 			var data = SerializeData(importRequests);
-			_showsImportChannel.BasicPublish("TestTvMazeScraperExchangeName", "RoutingKeyName", null, data);
+			_showsImportChannel.BasicPublish(_config.ImportRequestsExchange, String.Empty, null, data);
+		}
+
+		public void RegisterShowsImportResultsConsumer(Func<IEnumerable<ImportResultModel>, Task> handler)
+		{
+			var showsImportResultsConsumer = new EventingBasicConsumer(_showsImportChannel);
+			showsImportResultsConsumer.Received += (_, args) =>
+			{
+				var importResults = DeserializeData<IEnumerable<ImportResultModel>>(args.Body, true);
+				handler(importResults);
+			};
+
+			_showsImportChannel.BasicConsume(queue: _config.ImportResultsQueue, autoAck: true, consumer: showsImportResultsConsumer);
 		}
 
 
@@ -42,21 +52,13 @@ namespace TvMazeScraper.BusinessLogic.Services
 			var showsApiConnection = GetConnection(_config.UserName, _config.Password, _config.VirtualHost, _config.HostName);
 
 			_showsImportChannel = showsApiConnection.CreateModel();
-			_showsImportChannel.ExchangeDeclare("TestTvMazeScraperExchangeName", ExchangeType.Direct);
-			_showsImportChannel.QueueDeclare("TestQueueName", false, false, false, null);
-			_showsImportChannel.QueueBind("TestQueueName", "TestExchangeName", "RoutingKeyName", null);
-		}
+			_showsImportChannel.QueueDeclare(_config.ImportRequestsQueue, false, false, false, null);
+			_showsImportChannel.ExchangeDeclare(_config.ImportRequestsExchange, ExchangeType.Direct);
+			_showsImportChannel.QueueBind(_config.ImportRequestsQueue, _config.ImportRequestsExchange, String.Empty);
 
-		private void RegisterConsumers()
-		{
-			var processShowsImportResultsConsumer = new AsyncEventingBasicConsumer(_showsImportChannel);
-			processShowsImportResultsConsumer.Received += async (_, args) =>
-			{
-				var importResults = DeserializeData<IEnumerable<ImportResultModel>>(args.Body);
-				await _tvMazeScraperService.ProcessImportResultsAsync(importResults);
-			};
-
-			_showsImportChannel.BasicConsume(queue: "TestQueueName", autoAck: true, consumer: processShowsImportResultsConsumer);
+			_showsImportChannel.QueueDeclare(_config.ImportResultsQueue, false, false, false, null);
+			_showsImportChannel.ExchangeDeclare(_config.ImportResultsExchange, ExchangeType.Direct);
+			_showsImportChannel.QueueBind(_config.ImportResultsQueue, _config.ImportResultsExchange, String.Empty);
 		}
 
 		private static IConnection GetConnection(string userName, string password, string virtualHost, string hostName)
@@ -68,6 +70,7 @@ namespace TvMazeScraper.BusinessLogic.Services
 				VirtualHost = virtualHost,
 				HostName = hostName
 			};
+
 
 			return factory.CreateConnection();
 		}
@@ -85,11 +88,13 @@ namespace TvMazeScraper.BusinessLogic.Services
 			}
 		}
 
-		private static T DeserializeData<T>(byte[] data)
+		private static T DeserializeData<T>(byte[] data, bool isArray = false)
 		{
 			using (var ms = new MemoryStream(data))
 			using (var reader = new BsonDataReader(ms))
 			{
+				reader.ReadRootValueAsArray = isArray;
+
 				var serializer = new JsonSerializer();
 				return serializer.Deserialize<T>(reader);
 			}

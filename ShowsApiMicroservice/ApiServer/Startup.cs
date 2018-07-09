@@ -30,7 +30,7 @@ namespace ApiServer
 				.AddAutoMapper()
 				.ConfigureInfrastructureServices()
 				.ConfigureDatabaseServices(Configuration)
-				.ConfigureBusinessLogicServices();
+				.ConfigureBusinessLogicServices(Configuration);
 
 			services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 		}

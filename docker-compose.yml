@@ -8,6 +8,7 @@ services:
       dockerfile: ShowsApiMicroservice/ApiServer/Dockerfile
     depends_on:
       - showsdb
+      - rabbit
   showsdb:
     image: microsoft/mssql-server-linux
     ports:
@@ -24,7 +25,18 @@ services:
     depends_on:
       - tvmazedb
       - server
+      - rabbit
   tvmazedb:
     image: mongo
     restart: always
+  rabbit:
+    image: "rabbitmq"
+    hostname: "rabbit1"
+    environment:
+      RABBITMQ_DEFAULT_USER: "TestUser"
+      RABBITMQ_DEFAULT_PASS: "TestPassword"
+      RABBITMQ_DEFAULT_VHOST: "/"
+    ports:
+      - "15672:15672"
+      - "5672:5672"
 

@@ -4,6 +4,8 @@
 		"ERROR_SAMPLE": "Error sample message.",
 		"WARNING_SAMPLE": "Warning sample message.",
 		"ARGUMENT_ERROR_SKIP_TAKE": "Invalid 'skip' and 'take' values.",
-		"DATABASE_ERROR_SAMPLE":  "Database error." 
+		"DATABASE_ERROR_SAMPLE": "Database error.",
+		"COMMUNICATION_STARTED": "communication started.",
+		"COMMUNICATION_ENDED": "communication ended."
 	}
 }
