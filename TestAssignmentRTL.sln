@@ -27,15 +27,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TvMazeScraper.Database.Inte
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TvMazeScraper.BusinessLogic", "TvMazeScraperMicroservice\TvMazeScraper.BusinessLogic\TvMazeScraper.BusinessLogic.csproj", "{D72A00FC-5BAA-42C7-BEC9-F52721C3FBAC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TvMazeScraper.Host", "TvMazeScraperMicroservice\TvMazeScraper.Host\TvMazeScraper.Host.csproj", "{07DBE1BD-53EE-4029-932C-C226940387E8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TvMazeScraper.Host", "TvMazeScraperMicroservice\TvMazeScraper.Host\TvMazeScraper.Host.csproj", "{07DBE1BD-53EE-4029-932C-C226940387E8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "ShowsApiMicroservice\Infrastructure\Infrastructure.csproj", "{A60D6C98-9DE0-4AA0-B486-65773C74605D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "ShowsApiMicroservice\Infrastructure\Infrastructure.csproj", "{A60D6C98-9DE0-4AA0-B486-65773C74605D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure.Interface", "ShowsApiMicroservice\Infrastructure.Interface\Infrastructure.Interface.csproj", "{2DD1FDD0-0EE4-436E-B16C-CCE94B08E766}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure.Interface", "ShowsApiMicroservice\Infrastructure.Interface\Infrastructure.Interface.csproj", "{2DD1FDD0-0EE4-436E-B16C-CCE94B08E766}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TvMazeScraper.Infrastructure", "TvMazeScraperMicroservice\TvMazeScraper.Infrastructure\TvMazeScraper.Infrastructure.csproj", "{CEA2B391-9450-42F6-9A04-7C56862A4E9C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TvMazeScraper.Infrastructure", "TvMazeScraperMicroservice\TvMazeScraper.Infrastructure\TvMazeScraper.Infrastructure.csproj", "{CEA2B391-9450-42F6-9A04-7C56862A4E9C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TvMazeScraper.Infrastructure.Interface", "TvMazeScraperMicroservice\TvMazeScraper.Infrastructure.Interface\TvMazeScraper.Infrastructure.Interface.csproj", "{72CA6C88-FC88-49FD-BA01-5BB3A05D66DD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TvMazeScraper.Infrastructure.Interface", "TvMazeScraperMicroservice\TvMazeScraper.Infrastructure.Interface\TvMazeScraper.Infrastructure.Interface.csproj", "{72CA6C88-FC88-49FD-BA01-5BB3A05D66DD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

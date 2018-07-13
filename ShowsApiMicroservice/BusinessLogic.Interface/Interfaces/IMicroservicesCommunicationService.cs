@@ -7,7 +7,7 @@ namespace BusinessLogic.Interface.Interfaces
 {
 	public interface IMicroservicesCommunicationService
 	{
-		void RegisterImportRequestsConsumers(Func<IEnumerable<ImportRequestModel>, Task> handler);
+		void RegisterImportRequestsConsumer(Func<IEnumerable<ImportRequestModel>, Task> handler);
 		void EnqueueImportResults(IEnumerable<ImportResultModel> importResults);
 	}
 }

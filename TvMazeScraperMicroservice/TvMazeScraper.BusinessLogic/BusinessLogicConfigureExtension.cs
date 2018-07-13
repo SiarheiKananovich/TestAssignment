@@ -16,6 +16,8 @@ namespace TvMazeScraper.BusinessLogic
 
 		public static IServiceCollection ConfigureBusinessLogicServices(this IServiceCollection services, IConfiguration config)
 		{
+			services.AddMemoryCache();
+
 			services
 				.Configure<AppConfig>(config.GetSection(AppConfigSection))
 				.Configure<TvMazeApiConfig>(config.GetSection(TvMazeApiConfigSection))
@@ -25,7 +27,7 @@ namespace TvMazeScraper.BusinessLogic
 			services
 				.AddSingleton<IHttpService, HttpService>()
 				.AddSingleton<ITvMazeScraperService, TvMazeScraperService>()
-				.AddTransient<ITvMazeApiService, TvMazeApiService>()
+				.AddSingleton<ITvMazeApiService, TvMazeApiService>()
 				.AddTransient<IMicroservicesCommunicationService, MicroservicesCommunicationService>();
 
 			services.AddHostedService<ShowsScraperHostedService>();

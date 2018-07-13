@@ -4,7 +4,7 @@
 	{
 		public string BaseApiUrl { get; set; }
 
-		public string ShowsSearchApiUrl { get; set; }
+		public string ShowsIndexApiUrl { get; set; }
 
 		public string ShowInfoApiUrl { get; set; }
 

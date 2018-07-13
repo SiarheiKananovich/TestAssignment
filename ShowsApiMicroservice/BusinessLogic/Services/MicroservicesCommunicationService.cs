@@ -34,7 +34,7 @@ namespace BusinessLogic.Services
 			_showsImportChannel.BasicPublish(_config.ImportResultsExchange, String.Empty, null, data);
 		}
 
-		public void RegisterImportRequestsConsumers(Func<IEnumerable<ImportRequestModel>, Task> handler)
+		public void RegisterImportRequestsConsumer(Func<IEnumerable<ImportRequestModel>, Task> handler)
 		{
 			var showsImportConsumer = new EventingBasicConsumer(_showsImportChannel);
 			showsImportConsumer.Received += (sender, eventArgs) =>

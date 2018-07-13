@@ -27,7 +27,8 @@ namespace TvMazeScraper.BusinessLogic.Services
 		private readonly IStringsProvider _strings;
 		private readonly IMicroservicesCommunicationService _communicationService;
 
-		private int _handledTvMazeShowsCount = 0;
+		private int _tvMazeShowsPage = 0;
+		private int _tvMazeShowsSkipPageItems = 0;
 
 
 		public TvMazeScraperService(
@@ -63,7 +64,7 @@ namespace TvMazeScraper.BusinessLogic.Services
 				{
 					var importRequests = await GetNextImportRequestsBatchAsync();
 
-					if (!importRequests.Any())
+					if (importRequests == null)
 					{
 						return;
 					}
@@ -111,18 +112,19 @@ namespace TvMazeScraper.BusinessLogic.Services
 		{
 			var showsForImport = new List<ImportRequestModel>(_config.MaxBatchSize);
 
-			while (showsForImport.Count < _config.MaxBatchSize)
+			do
 			{
-				int takeCount = _config.MaxBatchSize - showsForImport.Count;
-				var tvMazeShowsIds = await _tvMazeApiService.GetTvMazeShowsIdsAsync(_handledTvMazeShowsCount, takeCount);
-				_handledTvMazeShowsCount += tvMazeShowsIds.Count();
+				var tvMazePageShows = await _tvMazeApiService.GetTvMazeShowsIdsAsync(_tvMazeShowsPage);
 
-				if (!tvMazeShowsIds.Any())
+				// reached the last page 
+				if (tvMazePageShows == null)
 				{
-					return showsForImport;
+					break;
 				}
 
-				foreach (var tvMazeShowId in tvMazeShowsIds)
+				tvMazePageShows = tvMazePageShows.Skip(_tvMazeShowsSkipPageItems);
+
+				foreach (var tvMazeShowId in tvMazePageShows)
 				{
 					if (!await IsTvMazeShowImportedAsync(tvMazeShowId))
 					{
@@ -133,10 +135,29 @@ namespace TvMazeScraper.BusinessLogic.Services
 							showsForImport.Add(new ImportRequestModel(tvMazeShowId, showModel));
 						}
 					}
+
+					++_tvMazeShowsSkipPageItems;
+
+					if (showsForImport.Count == _config.MaxBatchSize)
+					{
+						break;
+					}
+				}
+
+				if (_tvMazeShowsSkipPageItems == tvMazePageShows.Count())
+				{
+					++_tvMazeShowsPage;
+					_tvMazeShowsSkipPageItems = 0;
 				}
 			}
+			while (showsForImport.Count < _config.MaxBatchSize);
 
-			return showsForImport;
+			if (showsForImport.Any())
+			{
+				return showsForImport;
+			}
+
+			return null;
 		}
 
 		private async Task<ShowModel> GetShowModelByTvMazeShowIdAsync(int tvMazeShowId)

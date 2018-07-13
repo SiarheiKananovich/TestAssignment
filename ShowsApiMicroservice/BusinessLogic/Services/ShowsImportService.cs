@@ -34,7 +34,7 @@ namespace BusinessLogic.Services
 		{
 			_logger.LogInformation(_strings[StringsEnum.START_PROCESS_IMPORT_REQUESTS]);
 
-			_communicationService.RegisterImportRequestsConsumers(ImportAsync);
+			_communicationService.RegisterImportRequestsConsumer(ImportAsync);
 		}
 
 		public async Task ImportAsync(IEnumerable<ImportRequestModel> importRequests)
